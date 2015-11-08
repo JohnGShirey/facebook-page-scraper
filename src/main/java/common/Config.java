@@ -60,7 +60,9 @@ public class Config
             collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
             crawlHistory = properties.getProperty("crawlHistory").toLowerCase().equals("true");
             String tempWaitTime = properties.getProperty("waitTime");
-            waitTime = (null != tempWaitTime) && tempWaitTime.matches("\\d+") ? Integer.parseInt(tempWaitTime) : 20 * pages.size();
+            waitTime = (null != tempWaitTime) && tempWaitTime.matches("\\d+") ?
+                    Integer.parseInt(tempWaitTime) : 20 * pages.size();
+            waitTime = waitTime > 300 ? 300 : waitTime;
         }
         catch (IOException e)
         {
