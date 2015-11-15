@@ -1,10 +1,11 @@
 # Facebook Page Scraper
-Facebook Page Scraper is a tool for collecting data from public facebook pages. This tool uses Facebook's Graph API to collect data. Using this tool, you can collect posts, comments, likes, shares data from public facebook pages. The collected data is written to a MySQL database. Optionally, the tool allows you to download the data in json format.
-
-This tool is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tool.      
 
 [![alt text] (https://zenodo.org/badge/19221/yhegde/fb-page-scraper.svg)]
 (https://zenodo.org/badge/latestdoi/19221/yhegde/fb-page-scraper)
+
+Facebook Page Scraper is a tool for collecting data from public facebook pages. This tool uses Facebook's Graph API to collect data. Using this tool, you can collect posts, comments, likes, shares data from public facebook pages. The collected data is written to a MySQL database. Optionally, the tool allows you to download the data in json format.
+
+This tool is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tool.      
 
 ## Quick start guide
 * Install MySQL server
