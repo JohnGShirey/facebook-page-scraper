@@ -10,6 +10,7 @@ public class Comment
     private String message;
     private String createdAt;
     private int likes;
+    private int replies;
     private String fromId;
     private String fromName;
 
@@ -20,6 +21,7 @@ public class Comment
         message = null != comment.get("message") ? comment.get("message").toString() : null;
         createdAt = null != comment.get("created_time") ? comment.get("created_time").toString() : null;
         likes = null != comment.get("like_count") ? Integer.parseInt(comment.get("like_count").toString()) : 0;
+        replies = null != comment.get("comment_count") ? Integer.parseInt(comment.get("comment_count").toString()) : 0;
         JSONObject from = (JSONObject) comment.get("from");
         if(null != from)
         {
@@ -66,5 +68,9 @@ public class Comment
     public String getFromName()
     {
         return fromName;
+    }
+
+    public int getReplies() {
+        return replies;
     }
 }

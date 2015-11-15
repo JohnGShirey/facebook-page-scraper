@@ -16,18 +16,27 @@ public class CommentsCollector
     private String page;
     private String postId;
     public JSONArray comments = new JSONArray();
+    public static String fields;
 
     public CommentsCollector(String page, String postId)
     {
         this.page = page;
         this.postId = postId;
+        if(null == Config.commentFields || Config.commentFields.isEmpty())
+        {
+            fields = "id,message,created_time,from,like_count,comment_count,message_tags";
+        }
+        else
+        {
+            fields = Config.commentFields;
+        }
     }
 
     public void collect()
     {
         String url = Config.baseUrl + "/" + postId + "/comments";
         url += "?access_token=" + Config.accessToken;
-        url += "&fields=id,message,created_time,like_count,from";
+        url += "&fields=" + fields;
 
         collect(url);
 
@@ -48,7 +57,10 @@ public class CommentsCollector
                 Comment comment = new Comment(postId, commentJson);
                 allComments.add(comment);
             }
-            updateDb(allComments);
+            if(Config.updateDb)
+            {
+                updateDb(allComments);
+            }
         }
     }
 
@@ -167,8 +179,8 @@ public class CommentsCollector
         int count = 0;
         Connection connection = DbManager.getConnection();
         String query = "INSERT INTO Comment "
-                + "(id, post_id, message, created_at, from_id, from_name, likes) "
-                + "VALUES (?,?,?,?,?,?,?)";
+                + "(id, post_id, message, created_at, from_id, from_name, likes, replies) "
+                + "VALUES (?,?,?,?,?,?,?,?)";
         PreparedStatement statement = null;
         try
         {
@@ -182,6 +194,7 @@ public class CommentsCollector
                 statement.setString(5, comment.getFromId());
                 statement.setString(6, comment.getFromName());
                 statement.setInt(7, comment.getLikes());
+                statement.setInt(8, comment.getReplies());
                 statement.addBatch();
 
                 if(++count % batchSize == 0)
@@ -207,7 +220,7 @@ public class CommentsCollector
         final int batchSize = 100;
         int count = 0;
         Connection connection = DbManager.getConnection();
-        String query = "UPDATE Comment SET message=?,likes=? WHERE id=?";
+        String query = "UPDATE Comment SET message=?,likes=?,replies=? WHERE id=?";
         PreparedStatement statement = null;
         try
         {
@@ -216,7 +229,8 @@ public class CommentsCollector
             {
                 statement.setString(1, comment.getMessage());
                 statement.setInt(2, comment.getLikes());
-                statement.setString(3, comment.getId());
+                statement.setInt(3, comment.getReplies());
+                statement.setString(4, comment.getId());
                 statement.addBatch();
 
                 if(++count % batchSize == 0)

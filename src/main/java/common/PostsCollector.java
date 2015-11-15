@@ -13,6 +13,8 @@ public class PostsCollector
     private String until;
     public List<String> postIds;
     public int commentsCount = 0;
+    public int likesCount = 0;
+    public static String fields;
 
     public PostsCollector(Page page, String since, String until)
     {
@@ -20,6 +22,15 @@ public class PostsCollector
         this.since = since;
         this.until = until;
         postIds = new ArrayList<String>();
+        if(null == Config.postFields || Config.postFields.isEmpty())
+        {
+            fields = "id,message,created_time,updated_time,place,tags,shares," +
+                    "likes.limit(1).summary(true),comments.limit(1).summary(true)";
+        }
+        else
+        {
+            fields = Config.postFields;
+        }
     }
 
     public void collect()
@@ -29,21 +40,30 @@ public class PostsCollector
         url += "&include_hidden=" + true;
         url += "&since=" + since;
         url += "&until=" + until;
-        url += "&fields=id,message,created_time,shares,likes.limit(1).summary(true),comments.limit(1).summary(true),updated_time";
+        url += "&fields=" + fields;
 
         collect(url);
 
-        if(Config.collectComments)
+        if(!FbCollector.collectStats)
         {
-            if(!FbCollector.collectStats)
+            for(String postId: postIds)
             {
-                for(String postId: postIds)
+                if(Config.collectComments)
                 {
                     CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
-                    if(commentsCollector.isFetchRequired())
+                    if(FbCollector.scrapeCount == 0 || commentsCollector.isFetchRequired())
                     {
                         commentsCollector.collect();
                         commentsCount += commentsCollector.comments.size();
+                    }
+                }
+                if(Config.collectLikes)
+                {
+                    LikesCollector likesCollector = new LikesCollector(page.getUsername(), postId);
+                    if(FbCollector.scrapeCount == 0 || likesCollector.isFetchRequired())
+                    {
+                        likesCollector.collect();
+                        likesCount += likesCollector.likes.size();
                     }
                 }
             }
@@ -65,7 +85,10 @@ public class PostsCollector
                 {
                     post.writeJson();
                 }
-                post.updateDb();
+                if(Config.updateDb)
+                {
+                    post.updateDb();
+                }
                 postIds.add(post.getId());
             }
             JSONObject paging = (JSONObject) posts.get("paging");

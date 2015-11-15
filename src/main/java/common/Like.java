@@ -15,11 +15,6 @@ public class Like
         fromName = likeJson.get("name").toString();
     }
 
-    public void updateDb()
-    {
-
-    }
-
     public String getPostId()
     {
         return postId;

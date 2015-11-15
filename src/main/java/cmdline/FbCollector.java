@@ -69,28 +69,31 @@ public class FbCollector
 
         initUntilPointer();
 
-        long statsSince = untilPointer - (2 * FbCollector.dayInMillis);
+        long statsSince = untilPointer - (2 * dayInMillis);
         long configSince = Util.toMillis(Config.since);
         statsSince = statsSince > configSince ? statsSince : configSince;
 
         String tempSince = Util.getDateTimeUtc(statsSince);
-        String tempUntil = Util.getDateTimeUtc(FbCollector.untilPointer);
+        String tempUntil = Util.getDateTimeUtc(untilPointer);
 
-        System.out.println(Util.getDbDateTimeEst() + " fetching stats data from " + tempSince + " to " + tempUntil);
-
-        int tempPostsCount = 0;
-        for(String page: Config.pages)
+        if(untilPointer > (statsStartedAt - 2 * dayInMillis))
         {
-            PageCollector pageCollector = new PageCollector(page);
-            pageCollector.collect();
+            System.out.println(Util.getDbDateTimeEst() + " fetching stats data from " + tempSince + " to " + tempUntil);
 
-            PostsCollector postsCollector = new PostsCollector(new Page(page), tempSince, tempUntil);
-            postsCollector.collect();
+            int tempPostsCount = 0;
+            for(String page: Config.pages)
+            {
+                PageCollector pageCollector = new PageCollector(page);
+                pageCollector.collect();
 
-            tempPostsCount += postsCollector.postIds.size();
+                PostsCollector postsCollector = new PostsCollector(new Page(page), tempSince, tempUntil);
+                postsCollector.collect();
+
+                tempPostsCount += postsCollector.postIds.size();
+            }
+
+            System.out.println(Util.getDbDateTimeEst() + " fetched " + tempPostsCount + " posts");
         }
-
-        System.out.println(Util.getDbDateTimeEst() + " fetched " + tempPostsCount + " posts");
 
         if(scrapeCount == 0)
         {
@@ -119,6 +122,7 @@ public class FbCollector
 
         int tempPostsCount = 0;
         int tempCommentsCount = 0;
+        int tempLikesCount = 0;
         for(String page: Config.pages)
         {
             PostsCollector postsCollector = new PostsCollector(new Page(page), tempSince, tempUntil);
@@ -126,9 +130,13 @@ public class FbCollector
 
             tempPostsCount += postsCollector.postIds.size();
             tempCommentsCount += postsCollector.commentsCount;
+            tempLikesCount += postsCollector.likesCount;
         }
 
-        System.out.println(Util.getDbDateTimeEst() + " fetched " + tempPostsCount + " posts, " + tempCommentsCount + " comments");
+        System.out.println(Util.getDbDateTimeEst() + " fetched " +
+                tempPostsCount + " posts, " +
+                tempCommentsCount + " comments, " +
+                tempLikesCount + " likes");
 
         boolean fetch = true;
         if(sincePointer == Util.toMillis(Config.since))

@@ -25,7 +25,10 @@ public class PageCollector
             {
                 page.writeJson();
             }
-            page.updateDb();
+            if(Config.updateDb)
+            {
+                page.updateDb();
+            }
         }
         else
         {

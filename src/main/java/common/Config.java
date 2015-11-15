@@ -14,18 +14,24 @@ public class Config
 {
     public static final String baseUrl = "https://graph.facebook.com/v2.5";
     public static String accessToken;
-    public static String jsonDir;
-    public static boolean collectJson;
-    public static boolean collectOnce;
     public static List<String> pages;
-    public static String since;
-    public static String until;
+    public static boolean updateDb;
     public static String dbUrl;
     public static String dbUser;
     public static String dbPass;
+    public static boolean collectJson;
+    public static String jsonDir;
+    public static boolean collectOnce;
+    public static String since;
+    public static String until;
     public static boolean collectComments;
+    public static boolean collectLikes;
     public static boolean crawlHistory;
+    /* fields for debugging or for advanced users */
     public static int waitTime;
+    public static String postFields;
+    public static String commentFields;
+
     static
     {
         init();
@@ -41,7 +47,6 @@ public class Config
             {
                 inputStream = new FileInputStream("config.properties");
             }
-
             if(null == inputStream)
             {
                 inputStream = Config.class.getClassLoader().getResourceAsStream("config.properties");
@@ -58,11 +63,15 @@ public class Config
             dbUser = properties.getProperty("dbUser");
             dbPass = properties.getProperty("dbPass");
             collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
+            collectLikes = properties.getProperty("collectLikes").toLowerCase().equals("true");
             crawlHistory = properties.getProperty("crawlHistory").toLowerCase().equals("true");
+            updateDb = ! properties.getProperty("updateDb").toLowerCase().equals("false");
             String tempWaitTime = properties.getProperty("waitTime");
             waitTime = (null != tempWaitTime) && tempWaitTime.matches("\\d+") ?
                     Integer.parseInt(tempWaitTime) : 20 * pages.size();
             waitTime = waitTime > 300 ? 300 : waitTime;
+            postFields = properties.getProperty("postFields");
+            commentFields = properties.getProperty("commentFields");
         }
         catch (IOException e)
         {
@@ -91,7 +100,7 @@ public class Config
 
     public static boolean isConfigValid()
     {
-        if(null == Config.accessToken || Config.accessToken.isEmpty())
+        if(null == accessToken || accessToken.isEmpty())
         {
             System.err.println("accessToken missing");
             return false;
@@ -101,7 +110,7 @@ public class Config
             System.err.println("pages missing");
             return false;
         }
-        if(null == Config.dbUrl || null == Config.dbUser || null == Config.dbPass)
+        if(null == dbUrl || null == dbUser || null == dbPass)
         {
             System.err.println("database connection parameters are required");
         }
@@ -110,14 +119,18 @@ public class Config
             System.err.println("invalid database parameters");
             return false;
         }
-        if(null == Config.since || Config.since.isEmpty() || !Config.since.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
+        if(null == since || since.isEmpty() || !since.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
         {
             System.err.println("invalid start date (since)");
             return false;
         }
-        if(Config.collectJson)
+        if(!updateDb && !collectJson)
         {
-            if(null == Config.jsonDir || Config.jsonDir.isEmpty())
+            System.err.println("both updateDb and collectJson are set to false");
+        }
+        if(collectJson)
+        {
+            if(null == jsonDir || jsonDir.isEmpty())
             {
                 System.err.println("json directory is required if collectJson=true");
                 return false;
