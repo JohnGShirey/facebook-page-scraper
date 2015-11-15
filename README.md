@@ -3,7 +3,7 @@ Facebook Page Scraper is a tool for collecting data from public facebook pages. 
 
 This tool is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tool.      
 
-![DOI] (https://zenodo.org/badge/19221/yhegde/fb-page-scraper.svg)
+[https://zenodo.org/badge/latestdoi/19221/yhegde/fb-page-scraper] (https://zenodo.org/badge/19221/yhegde/fb-page-scraper.svg)
 
 ## Quick start guide
 * Install MySQL server
