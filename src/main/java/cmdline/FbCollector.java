@@ -27,6 +27,8 @@ public class FbCollector
 
     public static long statsStartedAt;
 
+    private static boolean fetch= true;
+
     public static void main(String[] args) throws Exception
     {
         System.out.println(Util.getDbDateTimeEst() + " started fetching data");
@@ -44,6 +46,21 @@ public class FbCollector
         else
         {
             collectStatsData();
+            collectHistoricData();
+            while (true)
+            {
+                if(fetch)
+                {
+                    if(System.currentTimeMillis() > (statsStartedAt + 600000))
+                    {
+                        collectStatsData();
+                    }
+                    else
+                    {
+                        collectHistoricData();
+                    }
+                }
+            }
         }
     }
 
@@ -103,8 +120,6 @@ public class FbCollector
         {
             Util.sleep(300);
         }
-
-        collectHistoricData();
     }
 
     public static void collectHistoricData()
@@ -138,25 +153,13 @@ public class FbCollector
                 tempCommentsCount + " comments, " +
                 tempLikesCount + " likes");
 
-        boolean fetch = true;
+        fetch = true;
         if(sincePointer == Util.toMillis(Config.since))
         {
             scrapeCount++;
             System.out.println(Util.getDbDateTimeEst() + " scraped " + scrapeCount + " time(s)");
             Config.init();
             fetch = !Config.collectOnce;
-        }
-
-        if(fetch)
-        {
-            if(System.currentTimeMillis() > statsStartedAt + 600000)
-            {
-                collectStatsData();
-            }
-            else
-            {
-                collectHistoricData();
-            }
         }
     }
 
