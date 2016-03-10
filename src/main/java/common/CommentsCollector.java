@@ -49,7 +49,7 @@ public class CommentsCollector
                 writeCommentsJson(obj);
             }
 
-            List<Comment> allComments = new ArrayList<Comment>();
+            /*List<Comment> allComments = new ArrayList<Comment>();
             Iterator itr = comments.iterator();
             while (itr.hasNext())
             {
@@ -60,7 +60,7 @@ public class CommentsCollector
             if(Config.updateDb)
             {
                 updateDb(allComments);
-            }
+            }*/
         }
     }
 
@@ -85,8 +85,8 @@ public class CommentsCollector
 
     private void writeCommentsJson(JSONObject commentsJson)
     {
-        String jsonDir = Util.buildPath(page, "posts", postId);
-        String path = jsonDir + "/comments.json";
+        String dir = Util.buildPath("insert_queue", Util.getCurDateDirUtc());
+        String path = dir + "/" + Util.getCurTimeDirUtc() + "_comments_" + postId + ".json";
         try
         {
             FileWriter writer = new FileWriter(path);

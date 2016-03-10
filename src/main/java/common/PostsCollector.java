@@ -51,13 +51,13 @@ public class PostsCollector
                 if(Config.collectComments)
                 {
                     CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
-                    if(FbCollector.scrapeCount == 0 || commentsCollector.isFetchRequired())
+                    //if(FbCollector.scrapeCount == 0 || commentsCollector.isFetchRequired())
                     {
                         commentsCollector.collect();
                         commentsCount += commentsCollector.comments.size();
                     }
                 }
-                if(Config.collectLikes)
+                /*if(Config.collectLikes)
                 {
                     LikesCollector likesCollector = new LikesCollector(page.getUsername(), postId);
                     if(FbCollector.scrapeCount == 0 || likesCollector.isFetchRequired())
@@ -65,7 +65,7 @@ public class PostsCollector
                         likesCollector.collect();
                         likesCount += likesCollector.likes.size();
                     }
-                }
+                }*/
             }
         }
     }
@@ -85,10 +85,10 @@ public class PostsCollector
                 {
                     post.writeJson();
                 }
-                if(Config.updateDb)
+                /*if(Config.updateDb)
                 {
                     post.updateDb();
-                }
+                }*/
                 postIds.add(post.getId());
             }
             JSONObject paging = (JSONObject) posts.get("paging");

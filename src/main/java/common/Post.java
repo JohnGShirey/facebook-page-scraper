@@ -109,8 +109,8 @@ public class Post
 
     public void writeJson()
     {
-        String jsonDir = Util.buildPath(getPage().getUsername(), "posts", getId());
-        String path = jsonDir + "/" + (Config.crawlHistory ? Util.getCurDateTimeDir() + "_" : "") + "post.json";
+        String dir = Util.buildPath("insert_queue", Util.getCurDateDirUtc());
+        String path = dir + "/" + Util.getCurTimeDirUtc() + "_post_" + id + ".json";
         try
         {
             FileWriter writer = new FileWriter(path);

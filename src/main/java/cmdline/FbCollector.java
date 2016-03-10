@@ -19,6 +19,8 @@ public class FbCollector
 
     public static final int hourInMillis = 3600000;
 
+    public static final int minuteInMillis = 60000;
+
     public static final int timeSlice = hourInMillis;
 
     public static int scrapeCount = 0;
@@ -51,7 +53,7 @@ public class FbCollector
             {
                 if(fetch)
                 {
-                    if(System.currentTimeMillis() > (statsStartedAt + 600000))
+                    if(System.currentTimeMillis() > (statsStartedAt + 10 * minuteInMillis))
                     {
                         collectStatsData();
                     }
@@ -86,14 +88,14 @@ public class FbCollector
 
         initUntilPointer();
 
-        long statsSince = untilPointer - (2 * dayInMillis);
+        long statsSince = untilPointer - (5 * dayInMillis);
         long configSince = Util.toMillis(Config.since);
         statsSince = statsSince > configSince ? statsSince : configSince;
 
         String tempSince = Util.getDateTimeUtc(statsSince);
         String tempUntil = Util.getDateTimeUtc(untilPointer);
 
-        if(untilPointer > (statsStartedAt - 2 * dayInMillis))
+        if(untilPointer > (statsStartedAt - 5 * dayInMillis))
         {
             System.out.println(Util.getDbDateTimeEst() + " fetching stats data from " + tempSince + " to " + tempUntil);
 
@@ -112,11 +114,11 @@ public class FbCollector
             System.out.println(Util.getDbDateTimeEst() + " fetched " + tempPostsCount + " posts");
         }
 
-        if(scrapeCount == 0)
+        /*if(scrapeCount == 0)
         {
             Util.sleep(Config.waitTime);
         }
-        else
+        else*/
         {
             Util.sleep(300);
         }

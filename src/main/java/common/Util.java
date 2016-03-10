@@ -41,6 +41,30 @@ public class Util
         return dbDateFormatter.format(date);
     }
 
+    public static String getCurDateTimeDirUtc()
+    {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date = new Date(System.currentTimeMillis());
+        return formatter.format(date);
+    }
+
+    public static String getCurDateDirUtc()
+    {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date = new Date(System.currentTimeMillis());
+        return formatter.format(date);
+    }
+
+    public static String getCurTimeDirUtc()
+    {
+        DateFormat formatter = new SimpleDateFormat("HH-mm-ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date = new Date(System.currentTimeMillis());
+        return formatter.format(date);
+    }
+
     public static String getDateTimeUtc(long time)
     {
         DateFormat dbDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -52,8 +76,7 @@ public class Util
     {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-        long time = System.currentTimeMillis();
-        Date date = new Date(time);
+        Date date = new Date(System.currentTimeMillis());
         return formatter.format(date);
     }
 

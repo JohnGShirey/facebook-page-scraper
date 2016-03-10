@@ -25,10 +25,10 @@ public class PageCollector
             {
                 page.writeJson();
             }
-            if(Config.updateDb)
+            /*if(Config.updateDb)
             {
                 page.updateDb();
-            }
+            }*/
         }
         else
         {

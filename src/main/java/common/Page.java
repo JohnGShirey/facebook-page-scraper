@@ -48,8 +48,8 @@ public class Page
 
     public void writeJson()
     {
-        String jsonDir = Util.buildPath(username, "page");
-        String path = jsonDir + "/" + (Config.crawlHistory ? Util.getCurDateTimeDir() + "_" : "") + username + ".json";
+        String dir = Util.buildPath("insert_queue", Util.getCurDateDirUtc());
+        String path = dir + "/" + Util.getCurTimeDirUtc() + "_page_" + id + ".json";
         try
         {
             FileWriter writer = new FileWriter(path);

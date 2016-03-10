@@ -31,6 +31,8 @@ public class Config
     public static int waitTime;
     public static String postFields;
     public static String commentFields;
+    public static String insertQueueDir;
+    public static String archiveDir;
 
     static
     {
@@ -96,6 +98,11 @@ public class Config
         {
             System.exit(0);
         }
+
+        Util.buildPath("archive");
+        Util.buildPath("insert_queue");
+        insertQueueDir = jsonDir + "/insert_queue";
+        archiveDir = jsonDir + "/archive";
     }
 
     public static boolean isConfigValid()
