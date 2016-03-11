@@ -20,7 +20,7 @@ public class PageCollector
         JSONObject pageJson = Util.getJson(url);
         if(null != pageJson)
         {
-            Page page = new Page(pageJson);
+            Page page = new Page(pageJson, null);
             if(Config.collectJson)
             {
                 page.writeJson();

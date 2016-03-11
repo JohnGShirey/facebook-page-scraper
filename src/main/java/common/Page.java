@@ -23,8 +23,9 @@ public class Page
     private String category;
     private String affiliation;
     private String about;
+    private String crawlDateTimeUtc;
 
-    public Page(JSONObject pageJson)
+    public Page(JSONObject pageJson, String crawlDateTimeUtc)
     {
         json = pageJson;
         id = pageJson.get("id").toString();
@@ -38,6 +39,7 @@ public class Page
         category = null != pageJson.get("category") ? pageJson.get("category").toString() : null;
         affiliation = null != pageJson.get("affiliation") ? pageJson.get("affiliation").toString() : null;
         about = null != pageJson.get("about") ? pageJson.get("about").toString() : null;
+        this.crawlDateTimeUtc = crawlDateTimeUtc;
     }
 
     public Page(String username)
@@ -67,25 +69,33 @@ public class Page
         return DbManager.entryExists("Page", "id", id);
     }
 
-    public void updateDb()
+    public boolean updateDb()
     {
+        boolean success = true;
+
         if(pageExists())
         {
-            updatePageStats();
+            success = updatePageStats();
         }
         else
         {
-            insertPage();
+            success = insertPage();
         }
 
-        if(Config.crawlHistory)
+        if(success)
         {
-            insertPageCrawl();
+            if(Config.crawlHistory)
+            {
+                success = insertPageCrawl();
+            }
         }
+
+        return success;
     }
 
-    private void insertPage()
+    private boolean insertPage()
     {
+        boolean success = true;
         Connection connection = DbManager.getConnection();
         String query = "INSERT INTO Page "
                 + "(id,username,name,likes,talking_about,checkins,website,link,category,affiliation,about) "
@@ -109,6 +119,7 @@ public class Page
         }
         catch (SQLException e)
         {
+            success = false;
             e.printStackTrace();
         }
         finally
@@ -116,6 +127,7 @@ public class Page
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
+        return success;
     }
 
     private void updatePage()
@@ -152,8 +164,9 @@ public class Page
         }
     }
 
-    private void updatePageStats()
+    private boolean updatePageStats()
     {
+        boolean success = true;
         Connection connection = DbManager.getConnection();
         String query = "UPDATE Page SET likes=?, talking_about=? WHERE id=?";
         PreparedStatement statement = null;
@@ -167,6 +180,7 @@ public class Page
         }
         catch (SQLException e)
         {
+            success = false;
             e.printStackTrace();
         }
         finally
@@ -174,17 +188,19 @@ public class Page
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
+        return success;
     }
 
-    private void insertPageCrawl()
+    private boolean insertPageCrawl()
     {
+        boolean success = true;
         Connection connection = DbManager.getConnection();
         String query = "INSERT INTO PageCrawl (crawl_date,page_id,likes,talking_about) VALUES (?,?,?,?)";
         PreparedStatement statement = null;
         try
         {
             statement = connection.prepareStatement(query);
-            statement.setString(1, Util.getDbDateTimeUtc());
+            statement.setString(1, crawlDateTimeUtc);
             statement.setString(2, id);
             statement.setInt(3, likes);
             statement.setInt(4, talkingAbout);
@@ -192,6 +208,7 @@ public class Page
         }
         catch (SQLException e)
         {
+            success = false;
             e.printStackTrace();
         }
         finally
@@ -199,6 +216,7 @@ public class Page
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
+        return success;
     }
 
     public String getId() {
@@ -243,5 +261,11 @@ public class Page
 
     public String getAbout() {
         return about;
+    }
+
+    public static Page getPage(String pageId)
+    {
+        String username = DbManager.getFieldValue("Page", "username", "id", pageId);
+        return new Page(username);
     }
 }

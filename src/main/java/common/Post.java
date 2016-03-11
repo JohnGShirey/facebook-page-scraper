@@ -22,7 +22,7 @@ public class Post
     private int shares;
     private String updatedAt;
 
-    public Post(Page page, JSONObject postJson)
+    public Post(Page page, JSONObject postJson, String crawlDateTimeUtc)
     {
         this.page = page;
         this.post = postJson;
@@ -128,25 +128,33 @@ public class Post
         return DbManager.entryExists("Post", "id", getId());
     }
 
-    public void updateDb()
+    public boolean updateDb()
     {
+        boolean success = true;
+
         if(postExists())
         {
-            updatePost();
+            success = updatePost();
         }
         else
         {
-            insertPost();
+            success = insertPost();
         }
 
-        if(Config.crawlHistory)
+        if(success)
         {
-            insertPostCrawl();
+            if(Config.crawlHistory)
+            {
+                success = insertPostCrawl();
+            }
         }
+
+        return success;
     }
 
-    private void updatePost()
+    private boolean updatePost()
     {
+        boolean success = true;
         Connection connection = DbManager.getConnection();
         String query = "UPDATE Post "
                 + "SET message=?,updated_at=?,likes=?,comments=?,shares=? "
@@ -165,6 +173,7 @@ public class Post
         }
         catch (SQLException e)
         {
+            success = false;
             e.printStackTrace();
         }
         finally
@@ -172,10 +181,12 @@ public class Post
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
+        return success;
     }
 
-    private void insertPost()
+    private boolean insertPost()
     {
+        boolean success = true;
         Connection connection = DbManager.getConnection();
         String query = "INSERT INTO Post "
                 + "(id,page_id,message,created_at,updated_at,likes,comments,shares) "
@@ -196,6 +207,7 @@ public class Post
         }
         catch (SQLException e)
         {
+            success = false;
             e.printStackTrace();
         }
         finally
@@ -203,10 +215,12 @@ public class Post
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
+        return success;
     }
 
-    private void insertPostCrawl()
+    private boolean insertPostCrawl()
     {
+        boolean success = true;
         Connection connection = DbManager.getConnection();
         String query = "INSERT INTO PostCrawl "
                 + "(crawl_date,post_id,likes,comments,shares) "
@@ -224,6 +238,7 @@ public class Post
         }
         catch (SQLException e)
         {
+            success = false;
             e.printStackTrace();
         }
         finally
@@ -231,6 +246,7 @@ public class Post
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
+        return success;
     }
 
     public Page getPage()

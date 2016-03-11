@@ -44,20 +44,20 @@ public class PostsCollector
 
         collect(url);
 
-        if(!FbCollector.collectStats)
+        /*if(!FbCollector.collectStats)
         {
             for(String postId: postIds)
             {
                 if(Config.collectComments)
                 {
                     CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
-                    //if(FbCollector.scrapeCount == 0 || commentsCollector.isFetchRequired())
+                    if(FbCollector.scrapeCount == 0 || commentsCollector.isFetchRequired())
                     {
                         commentsCollector.collect();
                         commentsCount += commentsCollector.comments.size();
                     }
                 }
-                /*if(Config.collectLikes)
+                if(Config.collectLikes)
                 {
                     LikesCollector likesCollector = new LikesCollector(page.getUsername(), postId);
                     if(FbCollector.scrapeCount == 0 || likesCollector.isFetchRequired())
@@ -65,9 +65,9 @@ public class PostsCollector
                         likesCollector.collect();
                         likesCount += likesCollector.likes.size();
                     }
-                }*/
+                }
             }
-        }
+        }*/
     }
 
     private void collect(String url)
@@ -80,7 +80,7 @@ public class PostsCollector
             while (itr.hasNext())
             {
                 JSONObject postJson = (JSONObject) itr.next();
-                Post post = new Post(page, postJson);
+                Post post = new Post(page, postJson, null);
                 if(Config.collectJson)
                 {
                     post.writeJson();

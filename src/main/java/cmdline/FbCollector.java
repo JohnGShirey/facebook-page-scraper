@@ -21,7 +21,9 @@ public class FbCollector
 
     public static final int minuteInMillis = 60000;
 
-    public static final int timeSlice = hourInMillis;
+    public static final int statsSlice = 5 * dayInMillis;
+
+    public static final int historicSlice = dayInMillis;
 
     public static int scrapeCount = 0;
 
@@ -29,7 +31,7 @@ public class FbCollector
 
     public static long statsStartedAt;
 
-    private static boolean fetch= true;
+    private static boolean fetch = true;
 
     public static void main(String[] args) throws Exception
     {
@@ -53,7 +55,7 @@ public class FbCollector
             {
                 if(fetch)
                 {
-                    if(System.currentTimeMillis() > (statsStartedAt + 10 * minuteInMillis))
+                    if(System.currentTimeMillis() > (statsStartedAt + 20 * minuteInMillis))
                     {
                         collectStatsData();
                     }
@@ -88,14 +90,14 @@ public class FbCollector
 
         initUntilPointer();
 
-        long statsSince = untilPointer - (5 * dayInMillis);
+        long statsSince = untilPointer - statsSlice;
         long configSince = Util.toMillis(Config.since);
         statsSince = statsSince > configSince ? statsSince : configSince;
 
         String tempSince = Util.getDateTimeUtc(statsSince);
         String tempUntil = Util.getDateTimeUtc(untilPointer);
 
-        if(untilPointer > (statsStartedAt - 5 * dayInMillis))
+        if(untilPointer > (statsStartedAt - statsSlice))
         {
             System.out.println(Util.getDbDateTimeEst() + " fetching stats data from " + tempSince + " to " + tempUntil);
 
@@ -120,7 +122,7 @@ public class FbCollector
         }
         else*/
         {
-            Util.sleep(300);
+            Util.sleep(600);
         }
     }
 
@@ -133,7 +135,7 @@ public class FbCollector
         initSincePointer();
 
         String tempSince = Util.getDateTimeUtc(sincePointer);
-        String tempUntil = Util.getDateTimeUtc(sincePointer + timeSlice);
+        String tempUntil = Util.getDateTimeUtc(sincePointer + historicSlice);
 
         System.out.println(Util.getDbDateTimeEst() + " fetching historic data from " + tempSince + " to " + tempUntil);
 
@@ -183,12 +185,13 @@ public class FbCollector
 
         if(sincePointer == 0 || sincePointer == configSince)
         {
-            sincePointer = untilPointer - timeSlice;
+            sincePointer = untilPointer - statsSlice - historicSlice;
         }
         else
         {
-            sincePointer = sincePointer - timeSlice;
+            sincePointer = sincePointer - historicSlice;
         }
+
         if(sincePointer < configSince)
         {
             sincePointer = configSince;
