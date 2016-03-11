@@ -156,4 +156,16 @@ public class Util
             e.printStackTrace();
         }
     }
+
+    public static void sleepMillis(int millis)
+    {
+        try
+        {
+            Thread.sleep(millis);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

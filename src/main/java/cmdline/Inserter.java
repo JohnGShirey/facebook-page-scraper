@@ -52,9 +52,9 @@ public class Inserter
                     {
                         processComments(file);
                     }
+                    Util.sleepMillis(100);
                 }
             }
-
             Util.sleep(300);
         }
     }

@@ -50,7 +50,7 @@ public class FbCollector
         else
         {
             collectStatsData();
-            collectHistoricData();
+            Util.sleep(1140);
             while (true)
             {
                 if(fetch)
@@ -58,10 +58,12 @@ public class FbCollector
                     if(System.currentTimeMillis() > (statsStartedAt + 20 * minuteInMillis))
                     {
                         collectStatsData();
+                        Util.sleep(1140);
                     }
                     else
                     {
                         collectHistoricData();
+                        Util.sleep(60);
                     }
                 }
             }
@@ -114,15 +116,6 @@ public class FbCollector
             }
 
             System.out.println(Util.getDbDateTimeEst() + " fetched " + tempPostsCount + " posts");
-        }
-
-        /*if(scrapeCount == 0)
-        {
-            Util.sleep(Config.waitTime);
-        }
-        else*/
-        {
-            Util.sleep(600);
         }
     }
 
