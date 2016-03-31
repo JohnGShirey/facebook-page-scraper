@@ -293,4 +293,10 @@ public class Post
     {
         return updatedAt;
     }
+
+    public static String getUsername(String postId)
+    {
+        String pageId = DbManager.getFieldValue("Post", "page_id", "id", postId);
+        return DbManager.getFieldValue("Page", "username", "id", pageId);
+    }
 }

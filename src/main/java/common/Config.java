@@ -26,6 +26,7 @@ public class Config
     public static String until;
     public static boolean collectComments;
     public static boolean collectLikes;
+    public static boolean collectStats;
     public static boolean crawlHistory;
     /* fields for debugging or for advanced users */
     public static int waitTime;
@@ -66,6 +67,7 @@ public class Config
             dbPass = properties.getProperty("dbPass");
             collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
             collectLikes = properties.getProperty("collectLikes").toLowerCase().equals("true");
+            collectStats = properties.getProperty("collectStats").toLowerCase().equals("true");
             crawlHistory = properties.getProperty("crawlHistory").toLowerCase().equals("true");
             updateDb = ! properties.getProperty("updateDb").toLowerCase().equals("false");
             String tempWaitTime = properties.getProperty("waitTime");

@@ -1,14 +1,14 @@
 package cmdline;
 
-import common.Config;
-import common.Page;
-import common.Post;
-import common.Util;
+import common.*;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +50,8 @@ public class Inserter
                     }
                     else if(file.getName().contains("_comments_"))
                     {
-                        processComments(file);
+                        CommentsInserter commentsInserter = new CommentsInserter(file);
+                        commentsInserter.processComments();
                     }
                     Util.sleepMillis(100);
                 }
@@ -133,10 +134,5 @@ public class Inserter
                 }
             }
         }
-    }
-
-    public static void processComments(File commentsJsonFile)
-    {
-
     }
 }

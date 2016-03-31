@@ -124,7 +124,7 @@ public class Util
         return dir;
     }
 
-    public static synchronized JSONObject getJson(String url)
+    public static JSONObject getJson(String url)
     {
         JSONObject json = null;
         InputStream is = null;
