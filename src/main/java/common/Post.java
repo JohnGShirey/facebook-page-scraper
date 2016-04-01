@@ -143,10 +143,7 @@ public class Post
 
         if(success)
         {
-            if(Config.crawlHistory)
-            {
-                success = insertPostCrawl();
-            }
+            success = insertPostCrawl();
         }
 
         return success;

@@ -12,8 +12,6 @@ public class PostsCollector
     private String since;
     private String until;
     public List<String> postIds;
-    public int commentsCount = 0;
-    public int likesCount = 0;
     public static String fields;
 
     public PostsCollector(Page page, String since, String until)
@@ -43,31 +41,6 @@ public class PostsCollector
         url += "&fields=" + fields;
 
         collect(url);
-
-        /*if(!FbCollector.collectStats)
-        {
-            for(String postId: postIds)
-            {
-                if(Config.collectComments)
-                {
-                    CommentsCollector commentsCollector = new CommentsCollector(page.getUsername(), postId);
-                    if(FbCollector.scrapeCount == 0 || commentsCollector.isFetchRequired())
-                    {
-                        commentsCollector.collect();
-                        commentsCount += commentsCollector.comments.size();
-                    }
-                }
-                if(Config.collectLikes)
-                {
-                    LikesCollector likesCollector = new LikesCollector(page.getUsername(), postId);
-                    if(FbCollector.scrapeCount == 0 || likesCollector.isFetchRequired())
-                    {
-                        likesCollector.collect();
-                        likesCount += likesCollector.likes.size();
-                    }
-                }
-            }
-        }*/
     }
 
     private void collect(String url)
@@ -81,14 +54,7 @@ public class PostsCollector
             {
                 JSONObject postJson = (JSONObject) itr.next();
                 Post post = new Post(page, postJson, null);
-                if(Config.collectJson)
-                {
-                    post.writeJson();
-                }
-                /*if(Config.updateDb)
-                {
-                    post.updateDb();
-                }*/
+                post.writeJson();
                 postIds.add(post.getId());
             }
             JSONObject paging = (JSONObject) posts.get("paging");

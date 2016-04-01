@@ -68,10 +68,7 @@ public class CommentsInserter
             Comment comment = new Comment(postId, commentJson);
             allComments.add(comment);
         }
-        if(Config.updateDb)
-        {
-            updateDb(allComments);
-        }
+
         boolean success = updateDb(allComments);
         if(success)
         {

@@ -17,21 +17,8 @@ public class FbCollector
 
     public static int scrapeCount = 0;
 
-    public static void main(String[] args) throws Exception
+    public static void initTimePointers()
     {
-        System.out.println(Util.getDbDateTimeEst() + " started fetching data");
-
-        for(String page: Config.pages)
-        {
-            PageCollector pageCollector = new PageCollector(page);
-            pageCollector.collect();
-        }
-
-        if(Config.collectStats)
-        {
-            new StatsCollector().start();
-        }
-
         if(null == Config.until || Config.until.isEmpty() || !Config.until.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
         {
             configUntil = System.currentTimeMillis();
@@ -41,11 +28,55 @@ public class FbCollector
             configUntil = Util.toMillis(Config.until);
         }
 
-        untilPointer = configUntil;
-
         configSince = Util.toMillis(Config.since);
 
-        collectHistoricData();
+        untilPointer = configUntil;
+    }
+
+    public static void main(String[] args) throws Exception
+    {
+        initTimePointers();
+
+        System.out.println(Util.getDbDateTimeEst() + " started fetching data");
+
+        if(Config.collectStats)
+        {
+            new StatsCollector().start();
+        }
+        else
+        {
+            for(String page: Config.pages)
+            {
+                PageCollector pageCollector = new PageCollector(page);
+                pageCollector.collect();
+            }
+        }
+
+        boolean fetch = true;
+
+        while (fetch)
+        {
+            collectHistoricData();
+
+            if(sincePointer == configSince)
+            {
+                scrapeCount++;
+
+                System.out.println(Util.getDbDateTimeEst() + " scraped " + scrapeCount + " time(s)");
+
+                Config.init();
+
+                initTimePointers();
+
+                for(String page: Config.pages)
+                {
+                    PageCollector pageCollector = new PageCollector(page);
+                    pageCollector.collect();
+                }
+
+                fetch = !Config.collectOnce;
+            }
+        }
     }
 
     public static void collectHistoricData()
@@ -58,6 +89,7 @@ public class FbCollector
         }
 
         String tempSince = Util.getDateTimeUtc(sincePointer);
+
         String tempUntil = Util.getDateTimeUtc(untilPointer);
 
         System.out.println(Util.getDbDateTimeEst() + " fetching historic data from " + tempSince + " to " + tempUntil);
@@ -83,17 +115,6 @@ public class FbCollector
         if(untilPointer == configSince)
         {
             untilPointer = configUntil;
-        }
-
-        if(sincePointer == configSince)
-        {
-            scrapeCount++;
-            System.out.println(Util.getDbDateTimeEst() + " scraped " + scrapeCount + " time(s)");
-            Config.init();
-            if(!Config.collectOnce)
-            {
-                collectHistoricData();
-            }
         }
     }
 }

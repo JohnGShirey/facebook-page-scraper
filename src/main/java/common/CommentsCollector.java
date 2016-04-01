@@ -49,7 +49,11 @@ public class CommentsCollector extends Thread
         for(String id: postIds)
         {
             CommentsCollector commentsCollector = new CommentsCollector(id);
+
             commentsCollector.collect();
+
+            System.out.println(Util.getDbDateTimeEst() + " fetched " + commentsCollector.comments.size() + " comments for post " + id);
+
             Util.sleepMillis(10 * commentsCollector.comments.size());
         }
     }
@@ -64,25 +68,9 @@ public class CommentsCollector extends Thread
 
         if(!comments.isEmpty())
         {
-            if(Config.collectJson)
-            {
-                JSONObject obj = new JSONObject();
-                obj.put("data", comments);
-                writeCommentsJson(obj);
-            }
-
-            /*List<Comment> allComments = new ArrayList<Comment>();
-            Iterator itr = comments.iterator();
-            while (itr.hasNext())
-            {
-                JSONObject commentJson = (JSONObject) itr.next();
-                Comment comment = new Comment(postId, commentJson);
-                allComments.add(comment);
-            }
-            if(Config.updateDb)
-            {
-                updateDb(allComments);
-            }*/
+            JSONObject obj = new JSONObject();
+            obj.put("data", comments);
+            writeCommentsJson(obj);
         }
     }
 

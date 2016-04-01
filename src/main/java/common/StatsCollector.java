@@ -9,7 +9,7 @@ public class StatsCollector extends Thread
 
     public void run()
     {
-        while (Config.collectStats && null == Config.until)
+        while (Config.collectStats)
         {
             long statsStartedAt = System.currentTimeMillis();
 
@@ -20,6 +20,7 @@ public class StatsCollector extends Thread
             statsSince = statsSince > configSince ? statsSince : configSince;
 
             String tempSince = Util.getDateTimeUtc(statsSince);
+
             String tempUntil = Util.getDateTimeUtc(statsStartedAt);
 
             System.out.println(Util.getDbDateTimeEst() + " fetching stats data from " + tempSince + " to " + tempUntil);
@@ -39,7 +40,7 @@ public class StatsCollector extends Thread
 
             System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCount + " posts");
 
-            Util.sleep(600);
+            Util.sleep(1200);
 
             Config.init();
         }

@@ -2,8 +2,9 @@ package common;
 
 import org.json.simple.JSONObject;
 
+import java.util.List;
 
-public class PageCollector
+public class PageCollector extends Thread
 {
     private String page;
 
@@ -21,14 +22,7 @@ public class PageCollector
         if(null != pageJson)
         {
             Page page = new Page(pageJson, null);
-            if(Config.collectJson)
-            {
-                page.writeJson();
-            }
-            /*if(Config.updateDb)
-            {
-                page.updateDb();
-            }*/
+            page.writeJson();
         }
         else
         {

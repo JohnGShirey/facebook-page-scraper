@@ -15,11 +15,9 @@ public class Config
     public static final String baseUrl = "https://graph.facebook.com/v2.5";
     public static String accessToken;
     public static List<String> pages;
-    public static boolean updateDb;
     public static String dbUrl;
     public static String dbUser;
     public static String dbPass;
-    public static boolean collectJson;
     public static String jsonDir;
     public static boolean collectOnce;
     public static String since;
@@ -27,13 +25,10 @@ public class Config
     public static boolean collectComments;
     public static boolean collectLikes;
     public static boolean collectStats;
-    public static boolean crawlHistory;
-    /* fields for debugging or for advanced users */
-    public static int waitTime;
-    public static String postFields;
-    public static String commentFields;
     public static String insertQueueDir;
     public static String archiveDir;
+    public static String postFields;
+    public static String commentFields;
 
     static
     {
@@ -57,7 +52,6 @@ public class Config
             properties.load(inputStream);
             accessToken = properties.getProperty("accessToken");
             jsonDir = properties.getProperty("jsonDir");
-            collectJson = properties.getProperty("collectJson").toLowerCase().equals("true");
             collectOnce = properties.getProperty("collectOnce").toLowerCase().equals("true");
             pages = Arrays.asList(properties.getProperty("pages").split("\\s*,\\s*"));
             since = properties.getProperty("since");
@@ -68,12 +62,6 @@ public class Config
             collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
             collectLikes = properties.getProperty("collectLikes").toLowerCase().equals("true");
             collectStats = properties.getProperty("collectStats").toLowerCase().equals("true");
-            crawlHistory = properties.getProperty("crawlHistory").toLowerCase().equals("true");
-            updateDb = ! properties.getProperty("updateDb").toLowerCase().equals("false");
-            String tempWaitTime = properties.getProperty("waitTime");
-            waitTime = (null != tempWaitTime) && tempWaitTime.matches("\\d+") ?
-                    Integer.parseInt(tempWaitTime) : 20 * pages.size();
-            waitTime = waitTime > 300 ? 300 : waitTime;
             postFields = properties.getProperty("postFields");
             commentFields = properties.getProperty("commentFields");
         }
@@ -114,43 +102,58 @@ public class Config
             System.err.println("accessToken missing");
             return false;
         }
+
         if(pages == null || pages.size() == 0)
         {
             System.err.println("pages missing");
             return false;
         }
-        if(null == dbUrl || null == dbUser || null == dbPass)
-        {
-            System.err.println("database connection parameters are required");
-        }
-        if(!DbManager.isParamsValid())
-        {
-            System.err.println("invalid database parameters");
-            return false;
-        }
+
         if(null == since || since.isEmpty() || !since.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
         {
             System.err.println("invalid start date (since)");
             return false;
         }
-        if(!updateDb && !collectJson)
+
+        if(null == jsonDir || jsonDir.isEmpty())
         {
-            System.err.println("both updateDb and collectJson are set to false");
+            System.err.println("json directory is required if collectJson=true");
+            return false;
         }
-        if(collectJson)
+
+        File jsonDir = new File(Config.jsonDir);
+        if(!jsonDir.exists() || !jsonDir.isDirectory())
         {
-            if(null == jsonDir || jsonDir.isEmpty())
+            System.err.println("invalid json directory");
+            return false;
+        }
+
+        if(until != null && !until.isEmpty())
+        {
+            if(collectStats)
             {
-                System.err.println("json directory is required if collectJson=true");
-                return false;
-            }
-            File jsonDir = new File(Config.jsonDir);
-            if(!jsonDir.exists() || !jsonDir.isDirectory())
-            {
-                System.err.println("invalid json directory");
-                return false;
+                System.err.println("setting collectStats=false because you have a value for 'until'");
+                collectStats = false;
             }
         }
+
+        return true;
+    }
+
+    public static boolean isDbConfigValid()
+    {
+        if(null == dbUrl || null == dbUser || null == dbPass)
+        {
+            System.err.println("database connection parameters are required");
+            return false;
+        }
+
+        if(!DbManager.isParamsValid())
+        {
+            System.err.println("invalid database parameters");
+            return false;
+        }
+
         return true;
     }
 }

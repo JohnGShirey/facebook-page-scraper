@@ -84,10 +84,7 @@ public class Page
 
         if(success)
         {
-            if(Config.crawlHistory)
-            {
-                success = insertPageCrawl();
-            }
+            success = insertPageCrawl();
         }
 
         return success;

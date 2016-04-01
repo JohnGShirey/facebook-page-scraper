@@ -36,12 +36,10 @@ public class LikesCollector
 
         if(!likes.isEmpty())
         {
-            if(Config.collectJson)
-            {
-                JSONObject obj = new JSONObject();
-                obj.put("data", likes);
-                writeLikesJson(obj);
-            }
+
+            JSONObject obj = new JSONObject();
+            obj.put("data", likes);
+            writeLikesJson(obj);
 
             List<Like> allLikes = new ArrayList<Like>();
             Iterator itr = likes.iterator();
@@ -50,10 +48,6 @@ public class LikesCollector
                 JSONObject likeJson = (JSONObject) itr.next();
                 Like like = new Like(postId, likeJson);
                 allLikes.add(like);
-            }
-            if(Config.updateDb)
-            {
-                updateDb(allLikes);
             }
         }
     }
