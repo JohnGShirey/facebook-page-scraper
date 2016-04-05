@@ -64,6 +64,8 @@ public class FbCollector
 
                 System.out.println(Util.getDbDateTimeEst() + " scraped " + scrapeCount + " time(s)");
 
+                Util.sleepMillis(StatsCollector.statsSlice);
+
                 Config.init();
 
                 initTimePointers();

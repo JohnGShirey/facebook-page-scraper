@@ -80,4 +80,31 @@ public class DbManager
         }
         return valid;
     }
+
+    public static List<String> getStringValues(String query)
+    {
+        List<String> values = new ArrayList<String>();
+        Connection connection = null;
+        try
+        {
+            connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next())
+            {
+                values.add(resultSet.getString(1));
+            }
+            resultSet.close();
+            statement.close();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try { if(null != connection) connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return values;
+    }
 }

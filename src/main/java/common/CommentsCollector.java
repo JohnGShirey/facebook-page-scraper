@@ -17,10 +17,8 @@ public class CommentsCollector extends Thread
     private List<String> postIds;
     public JSONArray comments = new JSONArray();
     public static String fields;
-
-    public CommentsCollector(String postId)
+    static
     {
-        this.postId = postId;
         if(null == Config.commentFields || Config.commentFields.isEmpty())
         {
             fields = "id,message,created_time,from,like_count,comment_count,message_tags";
@@ -31,17 +29,14 @@ public class CommentsCollector extends Thread
         }
     }
 
+    public CommentsCollector(String postId)
+    {
+        this.postId = postId;
+    }
+
     public CommentsCollector(List<String> postIds)
     {
         this.postIds = postIds;
-        if(null == Config.commentFields || Config.commentFields.isEmpty())
-        {
-            fields = "id,message,created_time,from,like_count,comment_count,message_tags";
-        }
-        else
-        {
-            fields = Config.commentFields;
-        }
     }
 
     public void run()

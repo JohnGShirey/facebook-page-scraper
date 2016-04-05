@@ -1,17 +1,8 @@
 package cmdline;
 
 import common.*;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Inserter
 {
@@ -64,6 +55,56 @@ public class Inserter
                 }
             }
             Util.sleep(300);
+        }
+    }
+
+    private class CleanArchive extends Thread
+    {
+        public void run()
+        {
+            while (true)
+            {
+                File[] candidateDirs = new File(Config.archiveDir).listFiles(new FileFilter()
+                {
+                    @Override
+                    public boolean accept(File file)
+                    {
+                        return file.isDirectory();
+                    }
+                });
+                for(File candiDir: candidateDirs)
+                {
+                    File[] dateDirs = candiDir.listFiles(new FileFilter()
+                    {
+                        @Override
+                        public boolean accept(File file)
+                        {
+                            return file.isDirectory();
+                        }
+                    });
+                    for(File dateDir: dateDirs)
+                    {
+                        File[] pageFiles = dateDir.listFiles(new FilenameFilter()
+                        {
+                            @Override
+                            public boolean accept(File dir, String name)
+                            {
+                                return name.endsWith(".json") && name.contains("_page_");
+                            }
+                        });
+
+                        File[] postFiles = dateDir.listFiles(new FilenameFilter()
+                        {
+                            @Override
+                            public boolean accept(File dir, String name)
+                            {
+                                return name.endsWith(".json") && name.contains("_post_");
+                            }
+                        });
+                    }
+                }
+                Util.sleep(300);
+            }
         }
     }
 }
