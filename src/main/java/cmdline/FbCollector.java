@@ -39,17 +39,10 @@ public class FbCollector
 
         System.out.println(Util.getDbDateTimeEst() + " started fetching data");
 
-        if(Config.collectStats)
+        for(String page: Config.pages)
         {
-            new StatsCollector().start();
-        }
-        else
-        {
-            for(String page: Config.pages)
-            {
-                PageCollector pageCollector = new PageCollector(page);
-                pageCollector.collect();
-            }
+            PageCollector pageCollector = new PageCollector(page);
+            pageCollector.collect();
         }
 
         boolean fetch = true;
@@ -63,8 +56,6 @@ public class FbCollector
                 scrapeCount++;
 
                 System.out.println(Util.getDbDateTimeEst() + " scraped " + scrapeCount + " time(s)");
-
-                Util.sleepMillis(StatsCollector.statsSlice);
 
                 Config.init();
 

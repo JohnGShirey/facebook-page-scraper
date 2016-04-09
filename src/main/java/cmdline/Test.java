@@ -1,60 +1,50 @@
 package cmdline;
 
+import common.Comment;
+import common.CommentsCollector;
+import common.CommentsInserter;
 import common.Config;
-import common.Util;
-import db.DbManager;
 import org.json.simple.JSONObject;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Test
 {
     public static void main(String[] args)
     {
         Config.init();
-        int i = 0;
-        for(String postId: DbManager.getStringValues("SELECT id FROM Post ORDER BY created_at DESC"))
+        List<String> posts = new ArrayList<String>();
+        for(String postId: posts)
         {
-            for(String commentId: DbManager.getStringValues("SELECT id FROM Comment WHERE post_id='" + postId + "' ORDER BY created_at DESC"))
+            List<Comment> allComments = new ArrayList<Comment>();
+            List<Comment> comments = getComments(postId, false);
+            allComments.addAll(comments);
+            for(Comment comment: comments)
             {
-                String url = Config.baseUrl + "/" + commentId + "?access_token=" + Config.accessToken + "&fields=parent";
-                JSONObject commentJson = Util.getJson(url);
-                if(null != commentJson)
-                {
-                    JSONObject parent = (JSONObject) commentJson.get("parent");
-                    if(null != parent)
-                    {
-                        String parentId = parent.get("id").toString();
-                        String parentMessage = parent.get("message").toString();
-                        Connection connection = DbManager.getConnection();
-                        String query = "UPDATE Comment SET parent_id=?,parent_message=? WHERE id=?";
-                        PreparedStatement statement = null;
-                        try
-                        {
-                            statement = connection.prepareStatement(query);
-                            statement.setString(1, parentId);
-                            statement.setString(2, parentMessage);
-                            statement.setString(3, commentId);
-                        }
-                        catch (SQLException e)
-                        {
-                            System.err.println("failed to update parent for comment: " + commentId);
-                        }
-                        finally
-                        {
-                            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
-                            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
-                        }
-                        System.out.println("updated parent for comment: " + commentId);
-                    }
-                }
+                allComments.addAll(getComments(comment.getId(), true));
             }
-            if(++i == 100)
-            {
-                break;
-            }
+            CommentsInserter inserter = new CommentsInserter(postId);
+            inserter.updateDb(allComments);
         }
+    }
+
+    public static List<Comment> getComments(String parentId, boolean commentReply)
+    {
+        List<Comment> allComments = new ArrayList<Comment>();
+        CommentsCollector commentsCollector = new CommentsCollector(parentId);
+        String url = Config.baseUrl + "/" + parentId + "/comments";
+        url += "?access_token=" + Config.accessToken;
+        url += "&fields=" + CommentsCollector.fields;
+        commentsCollector.collect(url);
+        Iterator itr = commentsCollector.comments.iterator();
+        while (itr.hasNext())
+        {
+            JSONObject commentJson = (JSONObject) itr.next();
+            Comment comment = new Comment(commentJson, parentId, commentReply);
+            allComments.add(comment);
+        }
+        return allComments;
     }
 }

@@ -107,4 +107,31 @@ public class DbManager
         }
         return values;
     }
+
+    public static Integer getInt(String query)
+    {
+        Integer value = null;
+        Connection connection = null;
+        try
+        {
+            connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next())
+            {
+                value = resultSet.getInt(1);
+            }
+            resultSet.close();
+            statement.close();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try { if(null != connection) { connection.close(); } } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return value;
+    }
 }

@@ -1,6 +1,5 @@
 package common;
 
-import cmdline.FbCollector;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -12,7 +11,7 @@ public class PostsCollector
     private String since;
     private String until;
     public List<String> postIds;
-    public static String fields;
+    private static final String fields = "id,message,created_time,updated_time,place,tags,shares,likes.limit(1).summary(true),comments.limit(1).summary(true)";
 
     public PostsCollector(Page page, String since, String until)
     {
@@ -20,15 +19,6 @@ public class PostsCollector
         this.since = since;
         this.until = until;
         postIds = new ArrayList<String>();
-        if(null == Config.postFields || Config.postFields.isEmpty())
-        {
-            fields = "id,message,created_time,updated_time,place,tags,shares," +
-                    "likes.limit(1).summary(true),comments.limit(1).summary(true)";
-        }
-        else
-        {
-            fields = Config.postFields;
-        }
     }
 
     public void collect()

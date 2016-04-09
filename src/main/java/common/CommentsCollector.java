@@ -16,18 +16,7 @@ public class CommentsCollector extends Thread
     private String postId;
     private List<String> postIds;
     public JSONArray comments = new JSONArray();
-    public static String fields;
-    static
-    {
-        if(null == Config.commentFields || Config.commentFields.isEmpty())
-        {
-            fields = "id,message,created_time,from,like_count,comment_count,message_tags";
-        }
-        else
-        {
-            fields = Config.commentFields;
-        }
-    }
+    public static final String fields = "id,message,created_time,from,like_count,comment_count";
 
     public CommentsCollector(String postId)
     {
@@ -69,7 +58,7 @@ public class CommentsCollector extends Thread
         }
     }
 
-    private void collect(String url)
+    public void collect(String url)
     {
         JSONObject commentsJson = Util.getJson(url);
         if(null != commentsJson)

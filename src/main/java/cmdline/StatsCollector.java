@@ -1,16 +1,19 @@
-package common;
+package cmdline;
 
-import cmdline.FbCollector;
 import common.*;
 
-public class StatsCollector extends Thread
+public class StatsCollector
 {
-    public static final int statsSlice = 5 * FbCollector.dayInMillis;
-
-    public void run()
+    public static void main(String[] args)
     {
-        while (Config.collectStats)
+        Config.init();
+
+        int depthDays = 1;
+
+        while(true)
         {
+            long statsSlice = depthDays * FbCollector.dayInMillis;
+
             long statsStartedAt = System.currentTimeMillis();
 
             long statsSince = statsStartedAt - statsSlice;
@@ -30,7 +33,7 @@ public class StatsCollector extends Thread
             for(String page: Config.pages)
             {
                 PageCollector pageCollector = new PageCollector(page);
-                pageCollector.collect();
+                pageCollector.collectStats();
 
                 PostsCollector postsCollector = new PostsCollector(new Page(page), tempSince, tempUntil);
                 postsCollector.collect();
@@ -40,7 +43,12 @@ public class StatsCollector extends Thread
 
             System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCount + " posts");
 
-            Util.sleep(1200);
+            Util.sleep(Config.statsInterval * 60);
+
+            if(++depthDays > Config.statsDepth)
+            {
+                depthDays = 1;
+            }
 
             Config.init();
         }

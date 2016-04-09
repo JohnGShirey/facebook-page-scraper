@@ -24,11 +24,11 @@ public class Config
     public static String until;
     public static boolean collectComments;
     public static boolean collectLikes;
-    public static boolean collectStats;
     public static String insertQueueDir;
     public static String archiveDir;
-    public static String postFields;
-    public static String commentFields;
+    public static int statsDepth = 2; // days
+    public static int statsInterval = 5; // minutes
+    public static boolean statsHistory;
 
     static
     {
@@ -61,9 +61,15 @@ public class Config
             dbPass = properties.getProperty("dbPass");
             collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
             collectLikes = properties.getProperty("collectLikes").toLowerCase().equals("true");
-            collectStats = properties.getProperty("collectStats").toLowerCase().equals("true");
-            postFields = properties.getProperty("postFields");
-            commentFields = properties.getProperty("commentFields");
+            if(null != properties.getProperty("statsDepth") && properties.getProperty("statsDepth").matches("\\d+"))
+            {
+                statsDepth =  Integer.parseInt(properties.getProperty("statsDepth"));
+            }
+            if(null != properties.getProperty("statsInterval") && properties.getProperty("statsInterval").matches("\\d+"))
+            {
+                statsInterval =  Integer.parseInt(properties.getProperty("statsInterval"));
+            }
+            statsHistory = properties.getProperty("statsHistory").toLowerCase().equals("true");
         }
         catch (IOException e)
         {
@@ -126,15 +132,6 @@ public class Config
         {
             System.err.println("invalid json directory");
             return false;
-        }
-
-        if(until != null && !until.isEmpty())
-        {
-            if(collectStats)
-            {
-                System.err.println("setting collectStats=false because you have a value for 'until'");
-                collectStats = false;
-            }
         }
 
         return true;

@@ -5,7 +5,6 @@ import org.json.simple.JSONObject;
 
 public class Comment
 {
-    private String postId;
     private String id;
     private String message;
     private String createdAt;
@@ -13,10 +12,11 @@ public class Comment
     private int replies;
     private String fromId;
     private String fromName;
+    private String parentId;
+    private boolean commentReply;
 
-    public Comment(String postId, JSONObject comment)
+    public Comment(JSONObject comment, String parentId, boolean commentReply)
     {
-        this.postId = postId;
         id = comment.get("id").toString();
         message = null != comment.get("message") ? comment.get("message").toString() : null;
         createdAt = null != comment.get("created_time") ? comment.get("created_time").toString() : null;
@@ -28,16 +28,13 @@ public class Comment
             fromId = null != from.get("id") ? from.get("id").toString() : "";
             fromName = null != from.get("name") ? from.get("name").toString() : "";
         }
+        this.parentId = parentId;
+        this.setCommentReply(commentReply);
     }
 
     public boolean commentExists()
     {
         return DbManager.entryExists("Comment", "id", getId());
-    }
-
-    public String getPostId()
-    {
-        return postId;
     }
 
     public String getId()
@@ -72,5 +69,25 @@ public class Comment
 
     public int getReplies() {
         return replies;
+    }
+
+    public String getParentId()
+    {
+        return parentId;
+    }
+
+    public void setParentCommentId(String parentId)
+    {
+        this.parentId = parentId;
+    }
+
+    public boolean isCommentReply()
+    {
+        return commentReply;
+    }
+
+    public void setCommentReply(boolean commentReply)
+    {
+        this.commentReply = commentReply;
     }
 }

@@ -40,6 +40,11 @@ public class CommentsInserter
         crawlDateTime = commentsJsonFile.getParentFile().getName() + " " + commentsJsonFile.getName().substring(0,8).replaceAll("-", ":");
     }
 
+    public CommentsInserter(String postId)
+    {
+        this.postId = postId;
+    }
+
     public void processComments()
     {
         JSONObject commentsJson = null;
@@ -65,7 +70,7 @@ public class CommentsInserter
         while (itr.hasNext())
         {
             JSONObject commentJson = (JSONObject) itr.next();
-            Comment comment = new Comment(postId, commentJson);
+            Comment comment = new Comment(commentJson, postId, false);
             allComments.add(comment);
         }
 
@@ -132,8 +137,8 @@ public class CommentsInserter
         int count = 0;
         Connection connection = DbManager.getConnection();
         String query = "INSERT INTO Comment "
-                + "(id, post_id, message, created_at, from_id, from_name, likes, replies) "
-                + "VALUES (?,?,?,?,?,?,?,?)";
+                + "(id, post_id, message, created_at, from_id, from_name, likes, replies, parent_id) "
+                + "VALUES (?,?,?,?,?,?,?,?,?)";
         PreparedStatement statement = null;
         try
         {
@@ -141,13 +146,14 @@ public class CommentsInserter
             for(Comment comment: comments)
             {
                 statement.setString(1, comment.getId());
-                statement.setString(2, comment.getPostId());
+                statement.setString(2, postId);
                 statement.setString(3, comment.getMessage());
                 statement.setString(4, Util.toDbDateTime(comment.getCreatedAt()));
                 statement.setString(5, comment.getFromId());
                 statement.setString(6, comment.getFromName());
                 statement.setInt(7, comment.getLikes());
                 statement.setInt(8, comment.getReplies());
+                statement.setString(9, comment.isCommentReply() ? comment.getParentId() : null);
                 statement.addBatch();
 
                 if(++count % batchSize == 0)
@@ -160,7 +166,8 @@ public class CommentsInserter
         catch (SQLException e)
         {
             success = false;
-            System.err.println("failed to insert comments for post: " + postId);
+            System.err.println("failed to insert comments for post " + postId);
+            e.printStackTrace();
         }
         finally
         {
@@ -177,7 +184,7 @@ public class CommentsInserter
         final int batchSize = 100;
         int count = 0;
         Connection connection = DbManager.getConnection();
-        String query = "UPDATE Comment SET message=?,likes=?,replies=? WHERE id=?";
+        String query = "UPDATE Comment SET message=?,likes=?,replies=?,parent_id=? WHERE id=?";
         PreparedStatement statement = null;
         try
         {
@@ -187,7 +194,8 @@ public class CommentsInserter
                 statement.setString(1, comment.getMessage());
                 statement.setInt(2, comment.getLikes());
                 statement.setInt(3, comment.getReplies());
-                statement.setString(4, comment.getId());
+                statement.setString(4, comment.isCommentReply() ? comment.getParentId() : null);
+                statement.setString(5, comment.getId());
                 statement.addBatch();
 
                 if(++count % batchSize == 0)
@@ -200,7 +208,8 @@ public class CommentsInserter
         catch (SQLException e)
         {
             success = false;
-            System.err.println("failed to insert comments for post: " + postId);
+            System.err.println("failed to update comments for post " + postId);
+            e.printStackTrace();
         }
         finally
         {
