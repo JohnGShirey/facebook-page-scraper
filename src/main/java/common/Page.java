@@ -82,7 +82,7 @@ public class Page
             success = insertPage();
         }
 
-        if(success)
+        if(success && Config.statsHistory)
         {
             success = insertPageCrawl();
         }

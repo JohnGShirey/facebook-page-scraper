@@ -87,19 +87,19 @@ public class FbCollector
 
         System.out.println(Util.getDbDateTimeEst() + " fetching historic data from " + tempSince + " to " + tempUntil);
 
-        List<String> posts = new ArrayList<String>();
+        List<Post> posts = new ArrayList<Post>();
 
         for(String page: Config.pages)
         {
             PostsCollector postsCollector = new PostsCollector(new Page(page), tempSince, tempUntil);
             postsCollector.collect();
 
-            posts.addAll(postsCollector.postIds);
+            posts.addAll(postsCollector.getPosts());
         }
 
         System.out.println(Util.getDbDateTimeEst() + " fetched " + posts.size() + " posts");
 
-        new CommentsCollector(posts).start();
+        //new CommentsCollector(posts).start();
 
         Util.sleep(10 * posts.size());
 

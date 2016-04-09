@@ -6,8 +6,6 @@ public class StatsCollector
 {
     public static void main(String[] args)
     {
-        Config.init();
-
         int depthDays = 1;
 
         while(true)
@@ -36,9 +34,9 @@ public class StatsCollector
                 pageCollector.collectStats();
 
                 PostsCollector postsCollector = new PostsCollector(new Page(page), tempSince, tempUntil);
-                postsCollector.collect();
+                postsCollector.collectStats();
 
-                postsCount += postsCollector.postIds.size();
+                postsCount += postsCollector.getPosts().size();
             }
 
             System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCount + " posts");

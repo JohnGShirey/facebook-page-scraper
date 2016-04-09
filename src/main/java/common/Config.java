@@ -105,32 +105,32 @@ public class Config
     {
         if(null == accessToken || accessToken.isEmpty())
         {
-            System.err.println("accessToken missing");
+            System.err.println(Util.getDbDateTimeEst() + " accessToken missing");
             return false;
         }
 
         if(pages == null || pages.size() == 0)
         {
-            System.err.println("pages missing");
+            System.err.println(Util.getDbDateTimeEst() + " pages missing");
             return false;
         }
 
         if(null == since || since.isEmpty() || !since.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
         {
-            System.err.println("invalid start date (since)");
+            System.err.println(Util.getDbDateTimeEst() + " invalid start date (since)");
             return false;
         }
 
         if(null == jsonDir || jsonDir.isEmpty())
         {
-            System.err.println("json directory is required if collectJson=true");
+            System.err.println(Util.getDbDateTimeEst() + " json directory is required");
             return false;
         }
 
         File jsonDir = new File(Config.jsonDir);
         if(!jsonDir.exists() || !jsonDir.isDirectory())
         {
-            System.err.println("invalid json directory");
+            System.err.println(Util.getDbDateTimeEst() + " invalid json directory");
             return false;
         }
 
@@ -141,13 +141,13 @@ public class Config
     {
         if(null == dbUrl || null == dbUser || null == dbPass)
         {
-            System.err.println("database connection parameters are required");
+            System.err.println(Util.getDbDateTimeEst() + " database connection parameters are required");
             return false;
         }
 
         if(!DbManager.isParamsValid())
         {
-            System.err.println("invalid database parameters");
+            System.err.println(Util.getDbDateTimeEst() + " invalid database parameters");
             return false;
         }
 

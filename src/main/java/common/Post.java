@@ -21,6 +21,7 @@ public class Post
     private int comments;
     private int shares;
     private String updatedAt;
+    private String crawlDateTimeUtc;
 
     public Post(Page page, JSONObject postJson, String crawlDateTimeUtc)
     {
@@ -33,6 +34,7 @@ public class Post
         likes = getLikesCount(postJson);
         comments = getCommentsCount(postJson);
         updatedAt = null != postJson.get("updated_time") ? postJson.get("updated_time").toString() : null;
+        this.crawlDateTimeUtc = crawlDateTimeUtc;
     }
 
     public Post(String postId)
@@ -141,7 +143,7 @@ public class Post
             success = insertPost();
         }
 
-        if(success)
+        if(success && Config.statsHistory)
         {
             success = insertPostCrawl();
         }
@@ -226,7 +228,7 @@ public class Post
         try
         {
             statement = connection.prepareStatement(query);
-            statement.setString(1, Util.getDbDateTimeUtc());
+            statement.setString(1, crawlDateTimeUtc);
             statement.setString(2, id);
             statement.setInt(3, likes);
             statement.setInt(4, comments);

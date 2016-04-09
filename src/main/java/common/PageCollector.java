@@ -35,7 +35,7 @@ public class PageCollector extends Thread
         JSONObject pageJson = getPageJson();
         if(null != pageJson)
         {
-            Page page = new Page(pageJson, null);
+            Page page = new Page(pageJson, Util.getDbDateTimeUtc());
             page.updateDb();
         }
         else

@@ -10,7 +10,7 @@ public class PostsCollector
     private Page page;
     private String since;
     private String until;
-    public List<String> postIds;
+    private List<Post> posts = new ArrayList<Post>();
     private static final String fields = "id,message,created_time,updated_time,place,tags,shares,likes.limit(1).summary(true),comments.limit(1).summary(true)";
 
     public PostsCollector(Page page, String since, String until)
@@ -18,10 +18,9 @@ public class PostsCollector
         this.page = page;
         this.since = since;
         this.until = until;
-        postIds = new ArrayList<String>();
     }
 
-    public void collect()
+    private void collectPosts()
     {
         String url = Config.baseUrl + ("/") + (page.getUsername()) + "/posts";
         url += "?access_token=" + Config.accessToken;
@@ -30,32 +29,53 @@ public class PostsCollector
         url += "&until=" + until;
         url += "&fields=" + fields;
 
-        collect(url);
+        while (null != url)
+        {
+            JSONObject postsJson = Util.getJson(url);
+            if(null != postsJson)
+            {
+                JSONArray postsData = (JSONArray) postsJson.get("data");
+                Iterator itr = postsData.iterator();
+                while (itr.hasNext())
+                {
+                    JSONObject postJson = (JSONObject) itr.next();
+                    posts.add(new Post(page, postJson, Util.getDbDateTimeUtc()));
+                }
+
+                url = null;
+                JSONObject paging = (JSONObject) postsJson.get("paging");
+                if(null != paging && null != paging.get("next"))
+                {
+                    url = paging.get("next").toString();
+                }
+            }
+            else
+            {
+                System.err.println(Util.getDbDateTimeEst() + " reading posts failed for url: " + url);
+            }
+        }
     }
 
-    private void collect(String url)
+    public void collect()
     {
-        JSONObject posts = Util.getJson(url);
-        if(null != posts)
+        collectPosts();
+        for(Post post: posts)
         {
-            JSONArray postsData = (JSONArray) posts.get("data");
-            Iterator itr = postsData.iterator();
-            while (itr.hasNext())
-            {
-                JSONObject postJson = (JSONObject) itr.next();
-                Post post = new Post(page, postJson, null);
-                post.writeJson();
-                postIds.add(post.getId());
-            }
-            JSONObject paging = (JSONObject) posts.get("paging");
-            if(null != paging && null != paging.get("next"))
-            {
-                collect(paging.get("next").toString());
-            }
+            post.writeJson();
         }
-        else
+    }
+
+    public void collectStats()
+    {
+        collectPosts();
+        for(Post post: posts)
         {
-            System.err.println("reading posts failed for url: " + url);
+            post.updateDb();
         }
+    }
+
+    public List<Post> getPosts()
+    {
+        return posts;
     }
 }
