@@ -11,10 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class CommentsCollector extends Thread
+public class CommentsCollector
 {
     private String postId;
-    private List<String> postIds;
+    private String commentId;
     public JSONArray comments = new JSONArray();
     public static final String fields = "id,message,created_time,from,like_count,comment_count";
 
@@ -23,23 +23,10 @@ public class CommentsCollector extends Thread
         this.postId = postId;
     }
 
-    public CommentsCollector(List<String> postIds)
+    public CommentsCollector(String postId, String commentId)
     {
-        this.postIds = postIds;
-    }
-
-    public void run()
-    {
-        for(String id: postIds)
-        {
-            CommentsCollector commentsCollector = new CommentsCollector(id);
-
-            commentsCollector.collect();
-
-            System.out.println(Util.getDbDateTimeEst() + " fetched " + commentsCollector.comments.size() + " comments for post " + id);
-
-            Util.sleepMillis(10 * commentsCollector.comments.size());
-        }
+        this.postId = postId;
+        this.commentId = commentId;
     }
 
     public void collect()
@@ -47,33 +34,31 @@ public class CommentsCollector extends Thread
         String url = Config.baseUrl + "/" + postId + "/comments";
         url += "?access_token=" + Config.accessToken;
         url += "&fields=" + fields;
-
-        collect(url);
+        while (url != null)
+        {
+            JSONObject commentsJson = Util.getJson(url);
+            if(null != commentsJson)
+            {
+                JSONArray commentsData = (JSONArray) commentsJson.get("data");
+                comments.addAll(commentsData);
+                url = null;
+                JSONObject paging = (JSONObject) commentsJson.get("paging");
+                if(null != paging && null != paging.get("next"))
+                {
+                    url = paging.get("next").toString();
+                }
+            }
+            else
+            {
+                System.err.println(Util.getDbDateTimeEst() + " reading comments failed for url: " + url);
+            }
+        }
 
         if(!comments.isEmpty())
         {
             JSONObject obj = new JSONObject();
             obj.put("data", comments);
             writeCommentsJson(obj);
-        }
-    }
-
-    public void collect(String url)
-    {
-        JSONObject commentsJson = Util.getJson(url);
-        if(null != commentsJson)
-        {
-            JSONArray commentsData = (JSONArray) commentsJson.get("data");
-            comments.addAll(commentsData);
-            JSONObject paging = (JSONObject) commentsJson.get("paging");
-            if(null != paging && null != paging.get("next"))
-            {
-                collect(paging.get("next").toString());
-            }
-        }
-        else
-        {
-            System.err.println("reading comments failed for url: " + url);
         }
     }
 
@@ -93,7 +78,19 @@ public class CommentsCollector extends Thread
         }
     }
 
-    public boolean isFetchRequired()
+    public List<String> getCommentIds()
+    {
+        List<String> commentsIds = new ArrayList<String>();
+        Iterator itr = comments.iterator();
+        while (itr.hasNext())
+        {
+            JSONObject comment = (JSONObject) itr.next();
+            commentsIds.add(comment.get("id").toString());
+        }
+        return commentsIds;
+    }
+
+    private boolean isFetchRequired()
     {
         return getCommentsCount() < new Post(postId).getComments();
     }

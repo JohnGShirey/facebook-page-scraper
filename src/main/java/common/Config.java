@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -13,22 +14,35 @@ import java.util.Properties;
 public class Config
 {
     public static final String baseUrl = "https://graph.facebook.com/v2.5";
+    public static final int dayInMillis = 86400000;
+    public static final int hourInMillis = 3600000;
+    public static final int minuteInMillis = 60000;
+
     public static String accessToken;
-    public static List<String> pages;
-    public static String dbUrl;
-    public static String dbUser;
-    public static String dbPass;
+    public static List<String> pages = new ArrayList<String>();
+
+    /* data collector specific parameters */
+    public static int numOfScrapes;
     public static String jsonDir;
-    public static boolean collectOnce;
     public static String since;
     public static String until;
     public static boolean collectComments;
     public static boolean collectLikes;
-    public static String insertQueueDir;
-    public static String archiveDir;
-    public static int statsDepth = 2; // days
-    public static int statsInterval = 5; // minutes
+    public static boolean scrapeHistory;
+
+    /* database connection parameters */
+    public static String dbUrl;
+    public static String dbUser;
+    public static String dbPass;
+
+    /* only used by stats collector */
+    public static int statsDepth;
+    public static int statsInterval;
     public static boolean statsHistory;
+
+    /* these dirs will be created if does not exist */
+    public static String downloadDir;
+    public static String archiveDir;
 
     static
     {
@@ -50,24 +64,48 @@ public class Config
                 inputStream = Config.class.getClassLoader().getResourceAsStream("config.properties");
             }
             properties.load(inputStream);
+
             accessToken = properties.getProperty("accessToken");
-            jsonDir = properties.getProperty("jsonDir");
-            collectOnce = properties.getProperty("collectOnce").toLowerCase().equals("true");
             pages = Arrays.asList(properties.getProperty("pages").split("\\s*,\\s*"));
+
+            if(null != properties.getProperty("numOfScrapes") && properties.getProperty("numOfScrapes").matches("\\d+"))
+            {
+                numOfScrapes =  Integer.parseInt(properties.getProperty("numOfScrapes"));
+            }
+            else
+            {
+                numOfScrapes = 0;
+            }
+            jsonDir = properties.getProperty("jsonDir");
             since = properties.getProperty("since");
             until = properties.getProperty("until");
+            if(null == Config.until || Config.until.isEmpty() || !Config.until.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
+            {
+                Config.until = Util.getDateTimeUtc(System.currentTimeMillis());
+            }
+            collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
+            collectLikes = properties.getProperty("collectLikes").toLowerCase().equals("true");
+            scrapeHistory = properties.getProperty("scrapeHistory").toLowerCase().equals("true");
+
             dbUrl = properties.getProperty("dbUrl");
             dbUser = properties.getProperty("dbUser");
             dbPass = properties.getProperty("dbPass");
-            collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
-            collectLikes = properties.getProperty("collectLikes").toLowerCase().equals("true");
+
             if(null != properties.getProperty("statsDepth") && properties.getProperty("statsDepth").matches("\\d+"))
             {
                 statsDepth =  Integer.parseInt(properties.getProperty("statsDepth"));
             }
+            else
+            {
+                statsDepth = 2;
+            }
             if(null != properties.getProperty("statsInterval") && properties.getProperty("statsInterval").matches("\\d+"))
             {
                 statsInterval =  Integer.parseInt(properties.getProperty("statsInterval"));
+            }
+            else
+            {
+                statsInterval = 5;
             }
             statsHistory = properties.getProperty("statsHistory").toLowerCase().equals("true");
         }
@@ -95,9 +133,9 @@ public class Config
             System.exit(0);
         }
 
+        Util.buildPath("download");
+        archiveDir = jsonDir + "/download";
         Util.buildPath("archive");
-        Util.buildPath("insert_queue");
-        insertQueueDir = jsonDir + "/insert_queue";
         archiveDir = jsonDir + "/archive";
     }
 

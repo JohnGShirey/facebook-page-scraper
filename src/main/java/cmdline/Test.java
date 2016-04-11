@@ -1,50 +1,66 @@
 package cmdline;
 
-import common.Comment;
 import common.CommentsCollector;
-import common.CommentsInserter;
 import common.Config;
+import common.Util;
+import db.DbManager;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class Test
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         Config.init();
-        List<String> posts = new ArrayList<String>();
-        for(String postId: posts)
-        {
-            List<Comment> allComments = new ArrayList<Comment>();
-            List<Comment> comments = getComments(postId, false);
-            allComments.addAll(comments);
-            for(Comment comment: comments)
-            {
-                allComments.addAll(getComments(comment.getId(), true));
-            }
-            CommentsInserter inserter = new CommentsInserter(postId);
-            inserter.updateDb(allComments);
-        }
+        String postId = "153080620724_10156892090815725";
+        String url = Config.baseUrl + "/" + postId + "/comments";
+        url += "?access_token=" + Config.accessToken;
+        url += "&fields=id,message,from,comments.summary(true)&limit=1";
+        JSONObject commentsJson = Util.getJson(url);
+        FileWriter writer = new FileWriter("C:/z/comments.v2.json");
+        commentsJson.writeJSONString(writer);
+        writer.close();
+        //print();
     }
 
-    public static List<Comment> getComments(String parentId, boolean commentReply)
+    public static void print()
     {
-        List<Comment> allComments = new ArrayList<Comment>();
-        CommentsCollector commentsCollector = new CommentsCollector(parentId);
-        String url = Config.baseUrl + "/" + parentId + "/comments";
-        url += "?access_token=" + Config.accessToken;
-        url += "&fields=" + CommentsCollector.fields;
-        commentsCollector.collect(url);
-        Iterator itr = commentsCollector.comments.iterator();
-        while (itr.hasNext())
+        System.out.println(DbManager.getStringValues("select id from Post where comments > 1000 order by created_at desc limit 1"));
+    }
+
+    public static void updateComment(String commentId, JSONObject commentJson)
+    {
+        JSONObject parent = (JSONObject) commentJson.get("parent");
+        if(null != parent)
         {
-            JSONObject commentJson = (JSONObject) itr.next();
-            Comment comment = new Comment(commentJson, parentId, commentReply);
-            allComments.add(comment);
+            String parentId = parent.get("id").toString();
+            String parentMessage = parent.get("message").toString();
+            System.out.println("parentId: " + parentId);
+            /*Connection connection = DbManager.getConnection();
+            String query = "UPDATE Comment SET parent_id=?,parent_message=? WHERE id=?";
+            PreparedStatement statement = null;
+            try
+            {
+                statement = connection.prepareStatement(query);
+                statement.setString(1, parentId);
+                statement.setString(2, parentMessage);
+                statement.setString(3, commentId);
+            }
+            catch (SQLException e)
+            {
+                System.err.println("failed to update parent for comment: " + commentId);
+            }
+            finally
+            {
+                if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+                if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }*/
+            System.out.println("updated parent for comment: " + commentId);
         }
-        return allComments;
     }
 }

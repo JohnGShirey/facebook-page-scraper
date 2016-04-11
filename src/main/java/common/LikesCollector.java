@@ -31,8 +31,25 @@ public class LikesCollector
         String url = Config.baseUrl + "/" + postId + "/likes";
         url += "?access_token=" + Config.accessToken;
         url += "&fields=" + fields;
-
-        collect(url);
+        while (null != url)
+        {
+            JSONObject likesJson = Util.getJson(url);
+            if(null != likesJson)
+            {
+                JSONArray likesData = (JSONArray) likesJson.get("data");
+                likes.addAll(likesData);
+                url = null;
+                JSONObject paging = (JSONObject) likesJson.get("paging");
+                if(null != paging && null != paging.get("next"))
+                {
+                    url = paging.get("next").toString();
+                }
+            }
+            else
+            {
+                System.err.println(Util.getDbDateTimeEst() + " reading likes data failed for url: " + url);
+            }
+        }
 
         if(!likes.isEmpty())
         {
@@ -49,25 +66,6 @@ public class LikesCollector
                 Like like = new Like(postId, likeJson);
                 allLikes.add(like);
             }
-        }
-    }
-
-    private void collect(String url)
-    {
-        JSONObject likesJson = Util.getJson(url);
-        if(null != likesJson)
-        {
-            JSONArray likesData = (JSONArray) likesJson.get("data");
-            likes.addAll(likesData);
-            JSONObject paging = (JSONObject) likesJson.get("paging");
-            if(null != paging && null != paging.get("next"))
-            {
-                collect(paging.get("next").toString());
-            }
-        }
-        else
-        {
-            System.err.println("reading likes failed for url: " + url);
         }
     }
 
@@ -92,7 +90,7 @@ public class LikesCollector
         return getLikesCount() < new Post(postId).getLikes();
     }
 
-    public int getLikesCount()
+    private int getLikesCount()
     {
         int count = 0;
         Connection connection = DbManager.getConnection();
@@ -120,77 +118,5 @@ public class LikesCollector
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
         return count;
-    }
-
-    public void updateDb(List<Like> likes)
-    {
-        List<Like> insertLikes = new ArrayList<Like>();
-        Connection connection = DbManager.getConnection();
-        String query = "SELECT * FROM `Like` WHERE from_id=? AND post_id=?";
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try
-        {
-            statement = connection.prepareStatement(query);
-            for(Like like: likes)
-            {
-                statement.setString(1, like.getFromId());
-                statement.setString(2, like.getPostId());
-                resultSet = statement.executeQuery();
-                if(resultSet.next())
-                {
-                }
-                else
-                {
-                    insertLikes.add(like);
-                }
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            if(null != resultSet) try { resultSet.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
-        insertLikes(insertLikes);
-    }
-
-    public void insertLikes(List<Like> likes)
-    {
-        final int batchSize = 1000;
-        int count = 0;
-        Connection connection = DbManager.getConnection();
-        String query = "INSERT INTO `Like` (from_id, from_name, post_id) VALUES (?,?,?)";
-        PreparedStatement statement = null;
-        try
-        {
-            statement = connection.prepareStatement(query);
-            for(Like like: likes)
-            {
-                statement.setString(1, like.getFromId());
-                statement.setString(2, like.getFromName());
-                statement.setString(3, like.getPostId());
-                statement.addBatch();
-
-                if(++count % batchSize == 0)
-                {
-                    statement.executeBatch();
-                }
-            }
-            statement.executeBatch();
-        }
-        catch (SQLException e)
-        {
-            System.err.println("failed to insert likes for post: " + postId);
-        }
-        finally
-        {
-            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
     }
 }

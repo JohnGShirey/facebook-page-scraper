@@ -8,9 +8,9 @@ public class StatsCollector
     {
         int depthDays = 1;
 
-        while(true)
+        while(Config.isDbConfigValid())
         {
-            long statsSlice = depthDays * FbCollector.dayInMillis;
+            long statsSlice = depthDays * Config.dayInMillis;
 
             long statsStartedAt = System.currentTimeMillis();
 

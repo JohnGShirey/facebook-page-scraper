@@ -34,9 +34,9 @@ public class CommentsInserter
         if(matcher.matches())
         {
             postId = matcher.group(2);
+            username = Post.getUsername(postId);
         }
         this.commentsJsonFile = commentsJsonFile;
-        username = Post.getUsername(postId);
         crawlDateTime = commentsJsonFile.getParentFile().getName() + " " + commentsJsonFile.getName().substring(0,8).replaceAll("-", ":");
     }
 

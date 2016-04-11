@@ -1,6 +1,5 @@
 package common;
 
-import cmdline.FbCollector;
 import db.DbManager;
 import org.json.simple.JSONObject;
 
