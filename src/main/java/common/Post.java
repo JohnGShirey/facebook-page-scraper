@@ -110,7 +110,7 @@ public class Post
 
     public void writeJson()
     {
-        String dir = Util.buildPath("insert_queue", Util.getCurDateDirUtc());
+        String dir = Util.buildPath("download", page.getUsername(), id);
         String path = dir + "/" + Util.getCurTimeDirUtc() + "_post_" + id + ".json";
         try
         {
@@ -120,7 +120,7 @@ public class Post
         }
         catch (Exception e)
         {
-            System.err.println("failed to write json file " + path);
+            System.err.println(Util.getDbDateTimeEst() + " failed to write json file " + path);
         }
     }
 

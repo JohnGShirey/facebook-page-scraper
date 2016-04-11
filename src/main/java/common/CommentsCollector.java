@@ -13,6 +13,7 @@ import java.util.*;
 
 public class CommentsCollector
 {
+    private String username;
     private String postId;
     private String commentId;
     public JSONArray comments = new JSONArray();
@@ -20,13 +21,14 @@ public class CommentsCollector
 
     public CommentsCollector(String postId)
     {
-        this.postId = postId;
+        new CommentsCollector(postId, null);
     }
 
     public CommentsCollector(String postId, String commentId)
     {
         this.postId = postId;
         this.commentId = commentId;
+        this.username = Post.getUsername(postId);
     }
 
     public void collect()
@@ -64,8 +66,16 @@ public class CommentsCollector
 
     private void writeCommentsJson(JSONObject commentsJson)
     {
-        String dir = Util.buildPath("insert_queue", Util.getCurDateDirUtc());
-        String path = dir + "/" + Util.getCurTimeDirUtc() + "_comments_" + postId + ".json";
+        String dir = Util.buildPath("download", username, postId);
+        String path;
+        if(commentId == null)
+        {
+            path = dir + "/" + Util.getCurTimeDirUtc() + "_comments_" + postId + ".json";
+        }
+        else
+        {
+            path = dir + "/" + Util.getCurTimeDirUtc() + "_comment_replies_" + commentId + ".json";
+        }
         try
         {
             FileWriter writer = new FileWriter(path);

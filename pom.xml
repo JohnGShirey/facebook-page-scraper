@@ -65,10 +65,10 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>cmdline.FbCollector</mainClass>
+                            <mainClass>cmdline.DataCollector</mainClass>
                         </manifest>
                     </archive>
-                    <finalName>fb-scraper</finalName>
+                    <finalName>fb-data-collector</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
@@ -83,8 +83,8 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
+            </plugin>-->
+            <!--<plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <archive>

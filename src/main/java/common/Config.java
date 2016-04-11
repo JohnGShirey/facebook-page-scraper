@@ -44,11 +44,6 @@ public class Config
     public static String downloadDir;
     public static String archiveDir;
 
-    static
-    {
-        init();
-    }
-
     public static void init()
     {
         Properties properties = new Properties();

@@ -15,7 +15,7 @@ public class Inserter
 
         while (true)
         {
-            File[] dateDirs = new File(Config.insertQueueDir).listFiles(new FileFilter()
+            File[] dateDirs = new File(Config.downloadDir).listFiles(new FileFilter()
             {
                 @Override
                 public boolean accept(File file)

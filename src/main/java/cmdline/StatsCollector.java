@@ -6,6 +6,8 @@ public class StatsCollector
 {
     public static void main(String[] args)
     {
+        Config.init();
+
         int depthDays = 1;
 
         while(Config.isDbConfigValid())

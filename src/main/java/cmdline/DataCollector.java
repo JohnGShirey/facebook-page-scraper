@@ -9,6 +9,8 @@ public class DataCollector
 {
     public static void main(String[] args) throws Exception
     {
+        Config.init();
+
         int scrapeCount = 0;
 
         boolean fetch = true;

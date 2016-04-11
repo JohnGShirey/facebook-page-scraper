@@ -49,7 +49,7 @@ public class Page
 
     public void writeJson()
     {
-        String dir = Util.buildPath("insert_queue", Util.getCurDateDirUtc());
+        String dir = Util.buildPath("download", username);
         String path = dir + "/" + Util.getCurTimeDirUtc() + "_page_" + id + ".json";
         try
         {
@@ -59,7 +59,7 @@ public class Page
         }
         catch (Exception e)
         {
-            System.err.println("failed to write json file " + path);
+            System.err.println(Util.getDbDateTimeEst() + " failed to write json file " + path);
         }
     }
 
