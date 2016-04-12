@@ -21,7 +21,8 @@ public class CommentsCollector
 
     public CommentsCollector(String postId)
     {
-        new CommentsCollector(postId, null);
+        this.postId = postId;
+        this.username = Post.getUsername(postId);
     }
 
     public CommentsCollector(String postId, String commentId)
@@ -34,6 +35,10 @@ public class CommentsCollector
     public void collect()
     {
         String url = Config.baseUrl + "/" + postId + "/comments";
+        if(null != commentId)
+        {
+            url = Config.baseUrl + "/" + commentId + "/comments";
+        }
         url += "?access_token=" + Config.accessToken;
         url += "&fields=" + fields;
         while (url != null)
@@ -66,15 +71,15 @@ public class CommentsCollector
 
     private void writeCommentsJson(JSONObject commentsJson)
     {
-        String dir = Util.buildPath("download", username, postId);
+        String dir = Util.buildPath("download", username, Util.getCurDateDirUtc());
         String path;
         if(commentId == null)
         {
-            path = dir + "/" + Util.getCurTimeDirUtc() + "_comments_" + postId + ".json";
+            path = dir + "/" + Util.getCurDateTimeDirUtc() + "_comments_" + postId + ".json";
         }
         else
         {
-            path = dir + "/" + Util.getCurTimeDirUtc() + "_comment_replies_" + commentId + ".json";
+            path = dir + "/" + Util.getCurDateTimeDirUtc() + "_comment_replies_" + commentId + ".json";
         }
         try
         {

@@ -49,8 +49,8 @@ public class Page
 
     public void writeJson()
     {
-        String dir = Util.buildPath("download", username);
-        String path = dir + "/" + Util.getCurTimeDirUtc() + "_page_" + id + ".json";
+        String dir = Util.buildPath("download", username, Util.getCurDateDirUtc());
+        String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_page_" + id + ".json";
         try
         {
             FileWriter writer = new FileWriter(path);
