@@ -71,8 +71,8 @@ public class LikesCollector
 
     private void writeLikesJson(JSONObject likesJson)
     {
-        String jsonDir = Util.buildPath(page, "posts", postId);
-        String path = jsonDir + "/likes.json";
+        String dir = Util.buildPath("download", page, Util.getCurDateDirUtc());
+        String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_post_likes_" + postId + ".json";
         try
         {
             FileWriter writer = new FileWriter(path);

@@ -47,6 +47,11 @@ public class Page
         this.id = DbManager.getFieldValue("Page", "id", "username", username);
     }
 
+    public static String getPageId(String username)
+    {
+        return DbManager.getFieldValue("Page", "id", "username", username);
+    }
+
     public void writeJson()
     {
         String dir = Util.buildPath("download", username, Util.getCurDateDirUtc());
@@ -59,7 +64,7 @@ public class Page
         }
         catch (Exception e)
         {
-            System.err.println(Util.getDbDateTimeEst() + " failed to write json file " + path);
+            System.err.println("failed to write json file " + path);
         }
     }
 
@@ -259,9 +264,13 @@ public class Page
         return about;
     }
 
+    public static String getUsername(String pageId)
+    {
+        return DbManager.getFieldValue("Page", "username", "id", pageId);
+    }
+
     public static Page getPage(String pageId)
     {
-        String username = DbManager.getFieldValue("Page", "username", "id", pageId);
-        return new Page(username);
+        return new Page(getUsername(pageId));
     }
 }

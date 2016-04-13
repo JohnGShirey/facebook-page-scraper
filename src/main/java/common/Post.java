@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class Post
 {
-    private Page page;
+    private String username;
     private JSONObject post;
     private String id;
     private String message;
@@ -22,9 +22,9 @@ public class Post
     private String updatedAt;
     private String crawlDateTimeUtc;
 
-    public Post(Page page, JSONObject postJson, String crawlDateTimeUtc)
+    public Post(String username, JSONObject postJson, String crawlDateTimeUtc)
     {
-        this.page = page;
+        this.username = username;
         this.post = postJson;
         id = postJson.get("id").toString();
         message = null != postJson.get("message") ? postJson.get("message").toString() : null;
@@ -110,7 +110,7 @@ public class Post
 
     public void writeJson()
     {
-        String dir = Util.buildPath("download", page.getUsername(), Util.getCurDateDirUtc());
+        String dir = Util.buildPath("download", username, Util.getCurDateDirUtc());
         String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_post_" + id + ".json";
         try
         {
@@ -120,7 +120,7 @@ public class Post
         }
         catch (Exception e)
         {
-            System.err.println(Util.getDbDateTimeEst() + " failed to write json file " + path);
+            System.err.println("failed to write json file " + path);
         }
     }
 
@@ -194,7 +194,7 @@ public class Post
         {
             statement = connection.prepareStatement(query);
             statement.setString(1, id);
-            statement.setString(2, page.getId());
+            statement.setString(2, Page.getPageId(username));
             statement.setString(3, message);
             statement.setString(4, Util.toDbDateTime(getCreatedAt()));
             statement.setString(5, Util.toDbDateTime(getUpdatedAt()));
@@ -247,9 +247,9 @@ public class Post
         return success;
     }
 
-    public Page getPage()
+    public String getUsername()
     {
-        return page;
+        return username;
     }
 
     public JSONObject getPost()

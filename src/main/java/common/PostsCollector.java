@@ -7,22 +7,22 @@ import java.util.*;
 
 public class PostsCollector
 {
-    private Page page;
+    private String username;
     private String since;
     private String until;
     private List<Post> posts = new ArrayList<Post>();
     private static final String fields = "id,message,created_time,updated_time,place,tags,shares,likes.limit(1).summary(true),comments.limit(1).summary(true)";
 
-    public PostsCollector(Page page, String since, String until)
+    public PostsCollector(String username, String since, String until)
     {
-        this.page = page;
+        this.username = username;
         this.since = since;
         this.until = until;
     }
 
     private void collectPosts()
     {
-        String url = Config.baseUrl + ("/") + (page.getUsername()) + "/posts";
+        String url = Config.baseUrl + ("/") + username + "/posts";
         url += "?access_token=" + Config.accessToken;
         url += "&include_hidden=" + true;
         url += "&since=" + since;
@@ -39,7 +39,7 @@ public class PostsCollector
                 while (itr.hasNext())
                 {
                     JSONObject postJson = (JSONObject) itr.next();
-                    posts.add(new Post(page, postJson, Util.getDbDateTimeUtc()));
+                    posts.add(new Post(username, postJson, Util.getDbDateTimeUtc()));
                 }
 
                 url = null;

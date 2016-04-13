@@ -51,7 +51,7 @@ public class PostInserter
         }
 
         Page page = Page.getPage(pageId);
-        Post post = new Post(page, postJson, crawlDateTime);
+        Post post = new Post(Page.getUsername(pageId), postJson, crawlDateTime);
         boolean success = post.updateDb();
         if(success)
         {

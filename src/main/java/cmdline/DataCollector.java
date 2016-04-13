@@ -45,7 +45,7 @@ public class DataCollector
         List<Post> posts = new ArrayList<Post>();
         for(String page: Config.pages)
         {
-            PostsCollector postsCollector = new PostsCollector(new Page(page), Config.since, Config.until);
+            PostsCollector postsCollector = new PostsCollector(page, Config.since, Config.until);
             postsCollector.collect();
             posts.addAll(postsCollector.getPosts());
             System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCollector.getPosts().size() + " posts from page " + page);
@@ -69,7 +69,7 @@ public class DataCollector
         for(Post post: posts)
         {
             System.out.println(Util.getDbDateTimeEst() + " fetching comments for post " + post.getId() + " created_at " + post.getCreatedAt());
-            CommentsCollector commentsCollector = new CommentsCollector(post.getId());
+            CommentsCollector commentsCollector = new CommentsCollector(post.getUsername(), post.getId());
             commentsCollector.collect();
             System.out.println(Util.getDbDateTimeEst() + " fetched " + commentsCollector.getCommentIds().size() + " comments");
             Util.sleepMillis(commentsCollector.getCommentIds().size() * 100);
@@ -77,7 +77,7 @@ public class DataCollector
             for(String commentId: commentsCollector.getCommentIds())
             {
                 System.out.println(Util.getDbDateTimeEst() + " fetching replies for comment " + commentId);
-                CommentsCollector repliesCollector = new CommentsCollector(post.getId(), commentId);
+                CommentsCollector repliesCollector = new CommentsCollector(post.getUsername(), post.getId(), commentId);
                 repliesCollector.collect();
                 System.out.println(Util.getDbDateTimeEst() + " fetched " + repliesCollector.getCommentIds().size() + " replies");
                 Util.sleepMillis(repliesCollector.getCommentIds().size() * 100);
@@ -90,7 +90,7 @@ public class DataCollector
         for(Post post: posts)
         {
             System.out.println(Util.getDbDateTimeEst() + " fetching likes for post " + post.getId() + " created_at " + post.getCreatedAt());
-            LikesCollector likesCollector = new LikesCollector(post.getPage().getUsername(), post.getId());
+            LikesCollector likesCollector = new LikesCollector(post.getUsername(), post.getId());
             likesCollector.collect();
             System.out.println(Util.getDbDateTimeEst() + " fetched " + likesCollector.likes.size() + " likes");
             Util.sleepMillis(likesCollector.likes.size() * 100);

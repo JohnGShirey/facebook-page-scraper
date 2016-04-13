@@ -35,7 +35,7 @@ public class StatsCollector
                 PageCollector pageCollector = new PageCollector(page);
                 pageCollector.collectStats();
 
-                PostsCollector postsCollector = new PostsCollector(new Page(page), tempSince, tempUntil);
+                PostsCollector postsCollector = new PostsCollector(page, tempSince, tempUntil);
                 postsCollector.collectStats();
 
                 postsCount += postsCollector.getPosts().size();

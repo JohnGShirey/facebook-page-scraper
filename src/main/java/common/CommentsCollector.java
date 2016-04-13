@@ -19,17 +19,17 @@ public class CommentsCollector
     public JSONArray comments = new JSONArray();
     public static final String fields = "id,message,created_time,from,like_count,comment_count";
 
-    public CommentsCollector(String postId)
+    public CommentsCollector(String username, String postId)
     {
+        this.username = username;
         this.postId = postId;
-        this.username = Post.getUsername(postId);
     }
 
-    public CommentsCollector(String postId, String commentId)
+    public CommentsCollector(String username, String postId, String commentId)
     {
+        this.username = username;
         this.postId = postId;
         this.commentId = commentId;
-        this.username = Post.getUsername(postId);
     }
 
     public void collect()
@@ -75,7 +75,7 @@ public class CommentsCollector
         String path;
         if(commentId == null)
         {
-            path = dir + "/" + Util.getCurDateTimeDirUtc() + "_comments_" + postId + ".json";
+            path = dir + "/" + Util.getCurDateTimeDirUtc() + "_post_comments_" + postId + ".json";
         }
         else
         {
