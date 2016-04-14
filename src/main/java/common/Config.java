@@ -129,7 +129,7 @@ public class Config
         }
 
         Util.buildPath("download");
-        archiveDir = jsonDir + "/download";
+        downloadDir = jsonDir + "/download";
         Util.buildPath("archive");
         archiveDir = jsonDir + "/archive";
     }

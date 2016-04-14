@@ -1,5 +1,6 @@
 package common.comment;
 
+import common.page.Page;
 import common.post.Post;
 import common.Util;
 import db.DbManager;
@@ -24,22 +25,39 @@ import java.util.regex.Pattern;
 
 public class CommentsInserter
 {
-    private static Pattern commentsJsonPattern = Pattern.compile("([\\d]{2}-[\\d]{2}-[\\d]{2})_comments_([\\d]+_[\\d]+).json");
-    private String postId;
+    private static Pattern pattern = Pattern.compile(
+            "(\\d{4}-\\d{2}-\\d{2})_(\\d{2}-\\d{2}-\\d{2})_(\\d+)_(\\d+)_(post_comments|comment_replies).json");
     private File commentsJsonFile;
-    private String crawlDateTime;
+    private String postId;
+    private String crawlDate;
+    private String crawlTime;
+    private String dbCrawlDateTime;
+    private String pageId;
     private String username;
+    private String commentId;
 
     public CommentsInserter(File commentsJsonFile)
     {
-        Matcher matcher = commentsJsonPattern.matcher(commentsJsonFile.getName());
+        this.commentsJsonFile = commentsJsonFile;
+        Matcher matcher = pattern.matcher(commentsJsonFile.getName());
         if(matcher.matches())
         {
-            postId = matcher.group(2);
-            username = Post.getUsername(postId);
+            crawlDate = matcher.group(1);
+            crawlTime = matcher.group(2);
+            dbCrawlDateTime = crawlDate + " " + crawlTime.replaceAll("-", ":");
+            if(matcher.group(5).equals("post_comments"))
+            {
+                pageId = matcher.group(3);
+                postId = matcher.group(3) + "_" + matcher.group(4);
+            }
+            else
+            {
+                commentId = matcher.group(3) + "_" + matcher.group(4);
+                postId = DbManager.getFieldValue("Comment", "post_id", "id", commentId);
+                pageId = DbManager.getFieldValue("Post", "page_id", "id", postId);
+            }
+            username = Page.getUsername(pageId);
         }
-        this.commentsJsonFile = commentsJsonFile;
-        crawlDateTime = commentsJsonFile.getParentFile().getName() + " " + commentsJsonFile.getName().substring(0,8).replaceAll("-", ":");
     }
 
     public CommentsInserter(String postId)
@@ -72,14 +90,28 @@ public class CommentsInserter
         while (itr.hasNext())
         {
             JSONObject commentJson = (JSONObject) itr.next();
-            Comment comment = new Comment(commentJson, postId, false);
+            Comment comment = new Comment(commentJson, postId, commentId);
             allComments.add(comment);
         }
 
-        boolean success = updateDb(allComments);
+        updateDb(allComments);
+
+        Util.sleepMillis(100);
+
+        boolean success;
+
+        if(null == commentId)
+        {
+            success = allComments.size() <= DbManager.getInt("SELECT COUNT(*) AS count FROM Comment WHERE post_id='" + postId + "'");
+        }
+        else
+        {
+            success = allComments.size() <= DbManager.getInt("SELECT COUNT(*) AS count FROM Comment WHERE parent_id='" + commentId + "'");
+        }
+
         if(success)
         {
-            String dir = Util.buildPath("archive", username, commentsJsonFile.getParentFile().getName());
+            String dir = Util.buildPath("archive", username, "posts", postId);
             String path = dir + "/" + commentsJsonFile.getName();
             success = commentsJsonFile.renameTo(new File(path));
             if(!success)
@@ -89,9 +121,8 @@ public class CommentsInserter
         }
     }
 
-    public boolean updateDb(List<Comment> comments)
+    public void updateDb(List<Comment> comments)
     {
-        boolean success = true;
         List<Comment> insertComments = new ArrayList<Comment>();
         List<Comment> updateComments = new ArrayList<Comment>();
         Connection connection = DbManager.getConnection();
@@ -117,7 +148,6 @@ public class CommentsInserter
         }
         catch (SQLException e)
         {
-            success = false;
             e.printStackTrace();
         }
         finally
@@ -128,13 +158,10 @@ public class CommentsInserter
         }
         insertComments(insertComments);
         updateComments(updateComments);
-
-        return success;
     }
 
-    public boolean insertComments(List<Comment> comments)
+    public void insertComments(List<Comment> comments)
     {
-        boolean success = true;
         final int batchSize = 100;
         int count = 0;
         Connection connection = DbManager.getConnection();
@@ -155,7 +182,7 @@ public class CommentsInserter
                 statement.setString(6, comment.getFromName());
                 statement.setInt(7, comment.getLikes());
                 statement.setInt(8, comment.getReplies());
-                statement.setString(9, comment.isCommentReply() ? comment.getParentId() : null);
+                statement.setString(9, commentId);
                 statement.addBatch();
 
                 if(++count % batchSize == 0)
@@ -167,8 +194,6 @@ public class CommentsInserter
         }
         catch (SQLException e)
         {
-            success = false;
-            System.err.println("failed to insert comments for post " + postId);
             e.printStackTrace();
         }
         finally
@@ -176,13 +201,10 @@ public class CommentsInserter
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
-
-        return success;
     }
 
-    public boolean updateComments(List<Comment> comments)
+    public void updateComments(List<Comment> comments)
     {
-        boolean success = true;
         final int batchSize = 100;
         int count = 0;
         Connection connection = DbManager.getConnection();
@@ -196,7 +218,7 @@ public class CommentsInserter
                 statement.setString(1, comment.getMessage());
                 statement.setInt(2, comment.getLikes());
                 statement.setInt(3, comment.getReplies());
-                statement.setString(4, comment.isCommentReply() ? comment.getParentId() : null);
+                statement.setString(4, commentId);
                 statement.setString(5, comment.getId());
                 statement.addBatch();
 
@@ -209,8 +231,6 @@ public class CommentsInserter
         }
         catch (SQLException e)
         {
-            success = false;
-            System.err.println("failed to update comments for post " + postId);
             e.printStackTrace();
         }
         finally
@@ -218,7 +238,5 @@ public class CommentsInserter
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
-
-        return success;
     }
 }

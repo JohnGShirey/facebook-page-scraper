@@ -1,7 +1,9 @@
 package common.page;
 
+import common.Config;
 import common.Util;
 import common.page.Page;
+import db.DbManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -15,11 +17,12 @@ import java.util.regex.Pattern;
 
 public class PageInserter
 {
-    private Pattern pattern = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})_(\\d{2}-\\d{2}-\\d{2})_(\\d+)_page.json");
+    private static Pattern pattern = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})_(\\d{2}-\\d{2}-\\d{2})_(\\d+)_page.json");
     private File pageJsonFile;
     private String crawlDate;
     private String crawlTime;
     private String pageId;
+    private String dbCrawlDateTime;
 
     public PageInserter(File pageJsonFile)
     {
@@ -30,6 +33,7 @@ public class PageInserter
             crawlDate = matcher.group(1);
             crawlTime = matcher.group(2);
             pageId = matcher.group(3);
+            dbCrawlDateTime = crawlDate + " " + crawlTime.replaceAll("-", ":");
         }
     }
 
@@ -52,18 +56,27 @@ public class PageInserter
             try { if(null != is) is.close(); } catch (Exception e) { e.printStackTrace(); }
         }
 
-        Page page = new Page(pageJson, null);
+        Page page = new Page(pageJson, dbCrawlDateTime);
 
-        boolean success = page.updateDb();
+        page.updateDb();
+
+        Util.sleepMillis(100);
+
+        boolean success = page.getLikes() == DbManager.getInt("SELECT likes FROM `Page` WHERE id='" + page.getId() + "'");
 
         if(success)
         {
-            String dir = Util.buildPath("archive", page.getUsername(), pageJsonFile.getParentFile().getName());
+            String dir = Util.buildPath("archive", page.getUsername(), "page");
             String path = dir + "/" + pageJsonFile.getName();
             success = pageJsonFile.renameTo(new File(path));
             if(!success)
             {
                 System.out.println(Util.getDbDateTimeEst() + " failed to move " + pageJsonFile.getAbsolutePath() + " to " + path);
+            }
+
+            if(Config.scrapeHistory)
+            {
+                page.insertPageCrawl();
             }
         }
     }

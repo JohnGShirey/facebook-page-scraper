@@ -12,10 +12,10 @@ public class Comment
     private int replies;
     private String fromId;
     private String fromName;
-    private String parentId;
-    private boolean commentReply;
+    private String postId;
+    private String commentId;
 
-    public Comment(JSONObject comment, String parentId, boolean commentReply)
+    public Comment(JSONObject comment, String postId, String commentId)
     {
         id = comment.get("id").toString();
         message = null != comment.get("message") ? comment.get("message").toString() : null;
@@ -28,8 +28,8 @@ public class Comment
             fromId = null != from.get("id") ? from.get("id").toString() : "";
             fromName = null != from.get("name") ? from.get("name").toString() : "";
         }
-        this.parentId = parentId;
-        this.setCommentReply(commentReply);
+        this.postId = postId;
+        this.commentId = commentId;
     }
 
     public boolean commentExists()
@@ -71,23 +71,13 @@ public class Comment
         return replies;
     }
 
-    public String getParentId()
+    public String getPostId()
     {
-        return parentId;
+        return postId;
     }
 
-    public void setParentCommentId(String parentId)
+    public String getCommentId()
     {
-        this.parentId = parentId;
-    }
-
-    public boolean isCommentReply()
-    {
-        return commentReply;
-    }
-
-    public void setCommentReply(boolean commentReply)
-    {
-        this.commentReply = commentReply;
+        return commentId;
     }
 }

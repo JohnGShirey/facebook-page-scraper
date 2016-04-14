@@ -132,30 +132,20 @@ public class Post
         return DbManager.entryExists("Post", "id", getId());
     }
 
-    public boolean updateDb()
+    public void updateDb()
     {
-        boolean success = true;
-
         if(postExists())
         {
-            success = updatePost();
+            updatePost();
         }
         else
         {
-            success = insertPost();
+            insertPost();
         }
-
-        if(success && Config.statsHistory)
-        {
-            success = insertPostCrawl();
-        }
-
-        return success;
     }
 
-    private boolean updatePost()
+    private void updatePost()
     {
-        boolean success = true;
         Connection connection = DbManager.getConnection();
         String query = "UPDATE Post "
                 + "SET message=?,updated_at=?,likes=?,comments=?,shares=? "
@@ -174,7 +164,6 @@ public class Post
         }
         catch (SQLException e)
         {
-            success = false;
             e.printStackTrace();
         }
         finally
@@ -182,12 +171,10 @@ public class Post
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
-        return success;
     }
 
-    private boolean insertPost()
+    private void insertPost()
     {
-        boolean success = true;
         Connection connection = DbManager.getConnection();
         String query = "INSERT INTO Post "
                 + "(id,page_id,message,created_at,updated_at,likes,comments,shares) "
@@ -208,7 +195,6 @@ public class Post
         }
         catch (SQLException e)
         {
-            success = false;
             e.printStackTrace();
         }
         finally
@@ -216,12 +202,10 @@ public class Post
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
-        return success;
     }
 
-    private boolean insertPostCrawl()
+    public void insertPostCrawl()
     {
-        boolean success = true;
         Connection connection = DbManager.getConnection();
         String query = "INSERT INTO PostCrawl "
                 + "(crawl_date,post_id,likes,comments,shares) "
@@ -239,7 +223,6 @@ public class Post
         }
         catch (SQLException e)
         {
-            success = false;
             e.printStackTrace();
         }
         finally
@@ -247,7 +230,6 @@ public class Post
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
-        return success;
     }
 
     public String getUsername()

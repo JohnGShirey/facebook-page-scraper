@@ -29,6 +29,7 @@ public class Inserter
                     return file.isDirectory();
                 }
             });
+
             for(File dateDir: dateDirs)
             {
                 File[] files = dateDir.listFiles(new FilenameFilter()
@@ -46,23 +47,38 @@ public class Inserter
                     {
                         new PageInserter(file).processPage();
                     }
-                    else if(file.getName().endsWith("post.json"))
+                }
+
+                for(File file: files)
+                {
+                    if(file.getName().endsWith("post.json"))
                     {
                         new PostInserter(file).processPost();
                     }
-                    else if(file.getName().endsWith("post_comments.json"))
+                }
+
+                for(File file: files)
+                {
+                    if(file.getName().endsWith("post_comments.json"))
                     {
                         new CommentsInserter(file).processComments();
                     }
-                    else if(file.getName().endsWith("comment_replies.json"))
+                }
+
+                for(File file: files)
+                {
+                    if(file.getName().endsWith("comment_replies.json"))
                     {
                         new CommentsInserter(file).processComments();
                     }
-                    else if(file.getName().endsWith("post_likes.json"))
+                }
+
+                for(File file: files)
+                {
+                    if(file.getName().endsWith("post_likes.json"))
                     {
                         new LikesInserter(file).processLikes();
                     }
-                    Util.sleepMillis(100);
                 }
             }
             Util.sleep(300);

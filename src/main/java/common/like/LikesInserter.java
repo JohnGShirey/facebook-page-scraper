@@ -1,5 +1,6 @@
 package common.like;
 
+import common.page.Page;
 import common.post.Post;
 import common.Util;
 import db.DbManager;
@@ -24,19 +25,27 @@ import java.util.regex.Pattern;
 
 public class LikesInserter
 {
-    private static Pattern likesJsonPattern = Pattern.compile("([\\d]{2}-[\\d]{2}-[\\d]{2})_likes_([\\d]+_[\\d]+).json");
-    private String postId;
+    private static Pattern pattern = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})_(\\d{2}-\\d{2}-\\d{2})_(\\d+)_(\\d+)_post_likes.json");
     private File likesJsonFile;
+    private String crawlDate;
+    private String crawlTime;
+    private String dbCrawlDateTime;
+    private String pageId;
     private String username;
+    private String postId;
 
     public LikesInserter(File likesJsonFile)
     {
         this.likesJsonFile = likesJsonFile;
-        Matcher matcher = likesJsonPattern.matcher(likesJsonFile.getName());
+        Matcher matcher = pattern.matcher(likesJsonFile.getName());
         if(matcher.matches())
         {
-            postId = matcher.group(2);
-            this.username = Post.getUsername(postId);
+            crawlDate = matcher.group(1);
+            crawlTime = matcher.group(2);
+            dbCrawlDateTime = crawlDate + " " + crawlTime.replaceAll("-", ":");
+            pageId = matcher.group(3);
+            postId = pageId + "_" + matcher.group(4);
+            this.username = Page.getUsername(pageId);
         }
     }
 
@@ -69,10 +78,15 @@ public class LikesInserter
             allLikes.add(like);
         }
 
-        boolean success = updateDb(allLikes);
+        updateDb(allLikes);
+
+        Util.sleepMillis(100);
+
+        boolean success = allLikes.size() <= DbManager.getInt("SELECT COUNT(*) AS count FROM `Like` WHERE post_id='" + postId + "'");
+
         if(success)
         {
-            String dir = Util.buildPath("archive", username, likesJsonFile.getParentFile().getName());
+            String dir = Util.buildPath("archive", username, "posts", postId);
             String path = dir + "/" + likesJsonFile.getName();
             success = likesJsonFile.renameTo(new File(path));
             if(!success)
@@ -82,7 +96,7 @@ public class LikesInserter
         }
     }
 
-    public boolean updateDb(List<Like> likes)
+    public void updateDb(List<Like> likes)
     {
         List<Like> insertLikes = new ArrayList<Like>();
         for(Like like: likes)
@@ -92,12 +106,11 @@ public class LikesInserter
                 insertLikes.add(like);
             }
         }
-        return insertLikes(insertLikes);
+        insertLikes(insertLikes);
     }
 
-    public boolean insertLikes(List<Like> likes)
+    public void insertLikes(List<Like> likes)
     {
-        boolean success = true;
         final int batchSize = 1000;
         int count = 0;
         Connection connection = DbManager.getConnection();
@@ -122,8 +135,6 @@ public class LikesInserter
         }
         catch (SQLException e)
         {
-            success = false;
-            System.err.println(Util.getDbDateTimeEst() + " failed to insert likes for post " + postId);
             e.printStackTrace();
         }
         finally
@@ -131,8 +142,6 @@ public class LikesInserter
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
-
-        return success;
     }
 
     public boolean likeExists(Like like)

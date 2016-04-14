@@ -1,8 +1,10 @@
 package common.post;
 
 
+import common.Config;
 import common.Util;
 import common.page.Page;
+import db.DbManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -16,20 +18,25 @@ import java.util.regex.Pattern;
 
 public class PostInserter
 {
-    private static Pattern postJsonPattern = Pattern.compile("([\\d]{2}-[\\d]{2}-[\\d]{2})_post_([\\d]+)_([\\d]+).json");
-
+    private static Pattern pattern = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})_(\\d{2}-\\d{2}-\\d{2})_(\\d+)_(\\d+)_post.json");
     private File postJsonFile;
-    private String crawlDateTime;
+    private String crawlDate;
+    private String crawlTime;
+    private String dbCrawlDateTime;
     private String pageId;
+    private String username;
 
     public PostInserter(File postJsonFile)
     {
         this.postJsonFile = postJsonFile;
-        crawlDateTime = postJsonFile.getParentFile().getName() + " " + postJsonFile.getName().substring(0,8).replaceAll("-", ":");
-        Matcher matcher = postJsonPattern.matcher(postJsonFile.getName());
+        Matcher matcher = pattern.matcher(postJsonFile.getName());
         if(matcher.matches())
         {
-            pageId = matcher.group(2);
+            crawlDate = matcher.group(1);
+            crawlTime = matcher.group(2);
+            pageId = matcher.group(3);
+            dbCrawlDateTime = crawlDate + " " + crawlTime.replaceAll("-", ":");
+            username = Page.getUsername(pageId);
         }
     }
 
@@ -52,17 +59,27 @@ public class PostInserter
             try { if(null != is) is.close(); } catch (Exception e) { e.printStackTrace(); }
         }
 
-        Page page = Page.getPage(pageId);
-        Post post = new Post(Page.getUsername(pageId), postJson, crawlDateTime);
-        boolean success = post.updateDb();
+        Post post = new Post(username, postJson, dbCrawlDateTime);
+
+        post.updateDb();
+
+        Util.sleepMillis(100);
+
+        boolean success = post.getLikes() == DbManager.getInt("SELECT likes FROM `Post` WHERE id='" + post.getId() + "'");
+
         if(success)
         {
-            String dir = Util.buildPath("archive", page.getUsername(), postJsonFile.getParentFile().getName());
+            String dir = Util.buildPath("archive", username, "posts", post.getId());
             String path = dir + "/" + postJsonFile.getName();
             success = postJsonFile.renameTo(new File(path));
             if(!success)
             {
                 System.out.println(Util.getDbDateTimeEst() + " failed to move " + postJsonFile.getAbsolutePath() + " to " + path);
+            }
+
+            if(Config.scrapeHistory)
+            {
+                post.insertPostCrawl();
             }
         }
     }
