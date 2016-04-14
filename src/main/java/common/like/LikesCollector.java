@@ -1,5 +1,8 @@
-package common;
+package common.like;
 
+import common.Config;
+import common.post.Post;
+import common.Util;
 import db.DbManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -9,20 +12,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class LikesCollector
 {
-    private String page;
+    private String username;
     private String postId;
     public JSONArray likes = new JSONArray();
     public static final String fields = "id,name";
 
-    public LikesCollector(String page, String postId)
+    public LikesCollector(String username, String postId)
     {
-        this.page = page;
+        this.username = username;
         this.postId = postId;
     }
 
@@ -53,26 +53,16 @@ public class LikesCollector
 
         if(!likes.isEmpty())
         {
-
             JSONObject obj = new JSONObject();
             obj.put("data", likes);
             writeLikesJson(obj);
-
-            List<Like> allLikes = new ArrayList<Like>();
-            Iterator itr = likes.iterator();
-            while (itr.hasNext())
-            {
-                JSONObject likeJson = (JSONObject) itr.next();
-                Like like = new Like(postId, likeJson);
-                allLikes.add(like);
-            }
         }
     }
 
     private void writeLikesJson(JSONObject likesJson)
     {
-        String dir = Util.buildPath("download", page, Util.getCurDateDirUtc());
-        String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_post_likes_" + postId + ".json";
+        String dir = Util.buildPath("download", Util.getCurDateDirUtc());
+        String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_" + postId + "_post_likes.json";
         try
         {
             FileWriter writer = new FileWriter(path);

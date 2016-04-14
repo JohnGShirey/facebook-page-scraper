@@ -1,5 +1,7 @@
-package common;
+package common.page;
 
+import common.Config;
+import common.Util;
 import db.DbManager;
 import org.json.simple.JSONObject;
 
@@ -22,9 +24,9 @@ public class Page
     private String category;
     private String affiliation;
     private String about;
-    private String crawlDateTimeUtc;
+    private String crawlDateTimeDirUtc;
 
-    public Page(JSONObject pageJson, String crawlDateTimeUtc)
+    public Page(JSONObject pageJson, String crawlDateTimeDirUtc)
     {
         json = pageJson;
         id = pageJson.get("id").toString();
@@ -38,7 +40,7 @@ public class Page
         category = null != pageJson.get("category") ? pageJson.get("category").toString() : null;
         affiliation = null != pageJson.get("affiliation") ? pageJson.get("affiliation").toString() : null;
         about = null != pageJson.get("about") ? pageJson.get("about").toString() : null;
-        this.crawlDateTimeUtc = crawlDateTimeUtc;
+        this.crawlDateTimeDirUtc = crawlDateTimeDirUtc;
     }
 
     public Page(String username)
@@ -54,8 +56,8 @@ public class Page
 
     public void writeJson()
     {
-        String dir = Util.buildPath("download", username, Util.getCurDateDirUtc());
-        String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_page_" + id + ".json";
+        String dir = Util.buildPath("download", Util.getCurDateDirUtc());
+        String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_" + id + "_page.json";
         try
         {
             FileWriter writer = new FileWriter(path);
@@ -64,7 +66,7 @@ public class Page
         }
         catch (Exception e)
         {
-            System.err.println("failed to write json file " + path);
+            System.err.println(Util.getDbDateTimeEst() + " failed to write json file " + path);
         }
     }
 
@@ -201,7 +203,7 @@ public class Page
         try
         {
             statement = connection.prepareStatement(query);
-            statement.setString(1, crawlDateTimeUtc);
+            statement.setString(1, crawlDateTimeDirUtc);
             statement.setString(2, id);
             statement.setInt(3, likes);
             statement.setInt(4, talkingAbout);

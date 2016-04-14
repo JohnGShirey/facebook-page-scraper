@@ -1,5 +1,7 @@
-package common;
+package common.post;
 
+import common.Config;
+import common.Util;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

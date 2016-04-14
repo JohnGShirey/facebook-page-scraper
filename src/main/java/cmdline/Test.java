@@ -1,6 +1,6 @@
 package cmdline;
 
-import common.CommentsCollector;
+import common.comment.CommentsCollector;
 import common.Config;
 import common.Util;
 import db.DbManager;

@@ -1,5 +1,8 @@
-package common;
+package common.comment;
 
+import common.Config;
+import common.post.Post;
+import common.Util;
 import db.DbManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -34,8 +37,12 @@ public class CommentsCollector
 
     public void collect()
     {
-        String url = Config.baseUrl + "/" + postId + "/comments";
-        if(null != commentId)
+        String url;
+        if(null == commentId)
+        {
+            url = Config.baseUrl + "/" + postId + "/comments";
+        }
+        else
         {
             url = Config.baseUrl + "/" + commentId + "/comments";
         }
@@ -71,15 +78,15 @@ public class CommentsCollector
 
     private void writeCommentsJson(JSONObject commentsJson)
     {
-        String dir = Util.buildPath("download", username, Util.getCurDateDirUtc());
+        String dir = Util.buildPath("download", Util.getCurDateDirUtc());
         String path;
-        if(commentId == null)
+        if(null == commentId)
         {
-            path = dir + "/" + Util.getCurDateTimeDirUtc() + "_post_comments_" + postId + ".json";
+            path = dir + "/" + Util.getCurDateTimeDirUtc() + "_" + postId + "_post_comments.json";
         }
         else
         {
-            path = dir + "/" + Util.getCurDateTimeDirUtc() + "_comment_replies_" + commentId + ".json";
+            path = dir + "/" + Util.getCurDateTimeDirUtc() + "_" + commentId + "_comment_replies.json";
         }
         try
         {
@@ -89,7 +96,7 @@ public class CommentsCollector
         }
         catch (Exception e)
         {
-            System.err.println("failed to write json file " + path);
+            System.err.println(Util.getDbDateTimeEst() + " failed to write json file " + path);
         }
     }
 

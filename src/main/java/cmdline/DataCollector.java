@@ -1,6 +1,11 @@
 package cmdline;
 
 import common.*;
+import common.comment.CommentsCollector;
+import common.like.LikesCollector;
+import common.page.PageCollector;
+import common.post.Post;
+import common.post.PostsCollector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,19 +41,19 @@ public class DataCollector
 
     public static void collectData()
     {
-        for(String page: Config.pages)
+        for(String username: Config.pages)
         {
-            PageCollector pageCollector = new PageCollector(page);
+            PageCollector pageCollector = new PageCollector(username);
             pageCollector.collect();
         }
 
         List<Post> posts = new ArrayList<Post>();
-        for(String page: Config.pages)
+        for(String username: Config.pages)
         {
-            PostsCollector postsCollector = new PostsCollector(page, Config.since, Config.until);
+            PostsCollector postsCollector = new PostsCollector(username, Config.since, Config.until);
             postsCollector.collect();
             posts.addAll(postsCollector.getPosts());
-            System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCollector.getPosts().size() + " posts from page " + page);
+            System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCollector.getPosts().size() + " posts from page " + username);
             Util.sleepMillis(postsCollector.getPosts().size() * 100);
         }
         System.out.println(Util.getDbDateTimeEst() + " fetched total " + posts.size() + " posts from " + Config.pages.size() + " pages");

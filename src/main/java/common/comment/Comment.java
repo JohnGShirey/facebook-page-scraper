@@ -1,4 +1,4 @@
-package common;
+package common.comment;
 
 import db.DbManager;
 import org.json.simple.JSONObject;

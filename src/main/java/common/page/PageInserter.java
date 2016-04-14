@@ -1,5 +1,7 @@
-package common;
+package common.page;
 
+import common.Util;
+import common.page.Page;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -8,16 +10,27 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PageInserter
 {
+    private Pattern pattern = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})_(\\d{2}-\\d{2}-\\d{2})_(\\d+)_page.json");
     private File pageJsonFile;
-    private String crawlDateTime;
+    private String crawlDate;
+    private String crawlTime;
+    private String pageId;
 
     public PageInserter(File pageJsonFile)
     {
         this.pageJsonFile = pageJsonFile;
-        crawlDateTime = pageJsonFile.getParentFile().getName() + " " + pageJsonFile.getName().substring(0,8).replaceAll("-", ":");
+        Matcher matcher = pattern.matcher(pageJsonFile.getName());
+        if(matcher.matches())
+        {
+            crawlDate = matcher.group(1);
+            crawlTime = matcher.group(2);
+            pageId = matcher.group(3);
+        }
     }
 
     public void processPage()
@@ -39,7 +52,7 @@ public class PageInserter
             try { if(null != is) is.close(); } catch (Exception e) { e.printStackTrace(); }
         }
 
-        Page page = new Page(pageJson, crawlDateTime);
+        Page page = new Page(pageJson, null);
 
         boolean success = page.updateDb();
 

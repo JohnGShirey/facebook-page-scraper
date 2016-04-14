@@ -1,6 +1,8 @@
 package cmdline;
 
 import common.*;
+import common.page.PageCollector;
+import common.post.PostsCollector;
 
 public class StatsCollector
 {

@@ -1,6 +1,10 @@
 package cmdline;
 
 import common.*;
+import common.comment.CommentsInserter;
+import common.like.LikesInserter;
+import common.page.PageInserter;
+import common.post.PostInserter;
 
 import java.io.*;
 
@@ -8,6 +12,8 @@ public class Inserter
 {
     public static void main(String[] args)
     {
+        Config.init();
+
         if(!Config.isDbConfigValid())
         {
             System.exit(0);
@@ -36,20 +42,25 @@ public class Inserter
 
                 for(File file: files)
                 {
-                    if(file.getName().contains("_page_"))
+                    if(file.getName().endsWith("page.json"))
                     {
-                        PageInserter pageInserter = new PageInserter(file);
-                        pageInserter.processPage();
+                        new PageInserter(file).processPage();
                     }
-                    else if(file.getName().contains("_post_"))
+                    else if(file.getName().endsWith("post.json"))
                     {
-                        PostInserter postInserter = new PostInserter(file);
-                        postInserter.processPost();
+                        new PostInserter(file).processPost();
                     }
-                    else if(file.getName().contains("_comments_"))
+                    else if(file.getName().endsWith("post_comments.json"))
                     {
-                        CommentsInserter commentsInserter = new CommentsInserter(file);
-                        commentsInserter.processComments();
+                        new CommentsInserter(file).processComments();
+                    }
+                    else if(file.getName().endsWith("comment_replies.json"))
+                    {
+                        new CommentsInserter(file).processComments();
+                    }
+                    else if(file.getName().endsWith("post_likes.json"))
+                    {
+                        new LikesInserter(file).processLikes();
                     }
                     Util.sleepMillis(100);
                 }

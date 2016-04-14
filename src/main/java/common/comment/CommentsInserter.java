@@ -1,5 +1,7 @@
-package common;
+package common.comment;
 
+import common.post.Post;
+import common.Util;
 import db.DbManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

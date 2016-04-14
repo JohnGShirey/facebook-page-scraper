@@ -1,5 +1,8 @@
-package common;
+package common.post;
 
+import common.Config;
+import common.Util;
+import common.page.Page;
 import db.DbManager;
 import org.json.simple.JSONObject;
 
@@ -110,8 +113,8 @@ public class Post
 
     public void writeJson()
     {
-        String dir = Util.buildPath("download", username, Util.getCurDateDirUtc());
-        String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_post_" + id + ".json";
+        String dir = Util.buildPath("download", Util.getCurDateDirUtc());
+        String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_" + id + "_post.json";
         try
         {
             FileWriter writer = new FileWriter(path);

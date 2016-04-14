@@ -1,6 +1,8 @@
-package common;
+package common.post;
 
 
+import common.Util;
+import common.page.Page;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
