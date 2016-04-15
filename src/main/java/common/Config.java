@@ -44,6 +44,10 @@ public class Config
     public static String downloadDir;
     public static String archiveDir;
 
+    /* used by pseudo tagger */
+    public static String tagTable;
+    public static List<Integer> excludeCodes = new ArrayList<Integer>();
+
     public static void init()
     {
         Properties properties = new Properties();
@@ -185,5 +189,54 @@ public class Config
         }
 
         return true;
+    }
+
+    public static void initPseudoTaggingConfig()
+    {
+        Properties properties = new Properties();
+        InputStream inputStream = null;
+        try
+        {
+            if(new File("config.properties").exists())
+            {
+                inputStream = new FileInputStream("config.properties");
+            }
+            if(null == inputStream)
+            {
+                inputStream = Config.class.getClassLoader().getResourceAsStream("config.properties");
+            }
+            properties.load(inputStream);
+
+            dbUrl = properties.getProperty("dbUrl");
+            dbUser = properties.getProperty("dbUser");
+            dbPass = properties.getProperty("dbPass");
+
+            tagTable = properties.getProperty("tagTable");
+            for(String s: properties.getProperty("excludeCodes").split("\\s*,\\s*"))
+            {
+                if(s.matches("\\d+"))
+                {
+                    excludeCodes.add(Integer.parseInt(s));
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            if(null != inputStream)
+            {
+                try
+                {
+                    inputStream.close();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

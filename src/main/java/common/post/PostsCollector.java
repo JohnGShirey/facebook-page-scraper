@@ -73,6 +73,10 @@ public class PostsCollector
         for(Post post: posts)
         {
             post.updateDb();
+            if(Config.statsHistory)
+            {
+                post.insertPostCrawl();
+            }
         }
     }
 

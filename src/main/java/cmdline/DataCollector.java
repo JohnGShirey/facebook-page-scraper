@@ -12,6 +12,8 @@ import java.util.List;
 
 public class DataCollector
 {
+    public static int requests = 0;
+
     public static void main(String[] args) throws Exception
     {
         Config.init();
@@ -53,8 +55,10 @@ public class DataCollector
             PostsCollector postsCollector = new PostsCollector(username, Config.since, Config.until);
             postsCollector.collect();
             posts.addAll(postsCollector.getPosts());
+
             System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCollector.getPosts().size() + " posts from page " + username);
-            Util.sleepMillis(postsCollector.getPosts().size() * 100);
+            requests += postsCollector.getPosts().size() + 1;
+            delay();
         }
         System.out.println(Util.getDbDateTimeEst() + " fetched total " + posts.size() + " posts from " + Config.pages.size() + " pages");
 
@@ -76,17 +80,26 @@ public class DataCollector
             System.out.println(Util.getDbDateTimeEst() + " fetching comments for post " + post.getId() + " created_at " + post.getCreatedAt());
             CommentsCollector commentsCollector = new CommentsCollector(post.getUsername(), post.getId());
             commentsCollector.collect();
-            System.out.println(Util.getDbDateTimeEst() + " fetched " + commentsCollector.getCommentIds().size() + " comments");
-            Util.sleepMillis(commentsCollector.getCommentIds().size() * 100);
 
-            for(String commentId: commentsCollector.getCommentIds())
-            {
-                System.out.println(Util.getDbDateTimeEst() + " fetching replies for comment " + commentId);
-                CommentsCollector repliesCollector = new CommentsCollector(post.getUsername(), post.getId(), commentId);
-                repliesCollector.collect();
-                System.out.println(Util.getDbDateTimeEst() + " fetched " + repliesCollector.getCommentIds().size() + " replies");
-                Util.sleepMillis(repliesCollector.getCommentIds().size() * 100);
-            }
+            System.out.println(Util.getDbDateTimeEst() + " fetched " + commentsCollector.getCommentIds().size() + " comments");
+            requests += commentsCollector.getCommentIds().size() + 1;
+            delay();
+
+            collectCommentReplies(post, commentsCollector.getCommentIds());
+        }
+    }
+
+    public static void collectCommentReplies(Post post, List<String> commentIds)
+    {
+        for(String commentId: commentIds)
+        {
+            System.out.println(Util.getDbDateTimeEst() + " fetching replies for comment " + commentId);
+            CommentsCollector repliesCollector = new CommentsCollector(post.getUsername(), post.getId(), commentId);
+            repliesCollector.collect();
+
+            System.out.println(Util.getDbDateTimeEst() + " fetched " + repliesCollector.getCommentIds().size() + " replies");
+            requests += repliesCollector.getCommentIds().size() + 1;
+            delay();
         }
     }
 
@@ -97,8 +110,19 @@ public class DataCollector
             System.out.println(Util.getDbDateTimeEst() + " fetching likes for post " + post.getId() + " created_at " + post.getCreatedAt());
             LikesCollector likesCollector = new LikesCollector(post.getUsername(), post.getId());
             likesCollector.collect();
+
             System.out.println(Util.getDbDateTimeEst() + " fetched " + likesCollector.likes.size() + " likes");
-            Util.sleepMillis(likesCollector.likes.size() * 100);
+            requests += likesCollector.likes.size() + 1;
+            delay();
+        }
+    }
+
+    public static void delay()
+    {
+        if(requests > 1000)
+        {
+            Util.sleep(300);
+            requests = 0;
         }
     }
 }

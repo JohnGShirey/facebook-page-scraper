@@ -108,18 +108,18 @@ public class DbManager
         return values;
     }
 
-    public static Integer getInt(String query)
+    public static List<Integer> getIntValues(String query)
     {
-        Integer value = null;
+        List<Integer> values = new ArrayList<Integer>();
         Connection connection = null;
         try
         {
             connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next())
+            while (resultSet.next())
             {
-                value = resultSet.getInt(1);
+                values.add(resultSet.getInt(1));
             }
             resultSet.close();
             statement.close();
@@ -130,8 +130,13 @@ public class DbManager
         }
         finally
         {
-            try { if(null != connection) { connection.close(); } } catch (SQLException e) { e.printStackTrace(); }
+            try { if(null != connection) connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
-        return value;
+        return values;
+    }
+
+    public static Integer getInt(String query)
+    {
+        return getIntValues(query).get(0);
     }
 }

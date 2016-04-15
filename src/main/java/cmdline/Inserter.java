@@ -7,6 +7,8 @@ import common.page.PageInserter;
 import common.post.PostInserter;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 
 public class Inserter
 {
@@ -16,6 +18,7 @@ public class Inserter
 
         if(!Config.isDbConfigValid())
         {
+            System.err.println("Exiting. Check Configuration.");
             System.exit(0);
         }
 
@@ -26,63 +29,62 @@ public class Inserter
                 @Override
                 public boolean accept(File file)
                 {
-                    return file.isDirectory();
+                    boolean accept = file.isDirectory();
+                    if(accept) accept = file.getName().matches("\\d{4}-\\d{2}-\\d{2}");
+                    if(accept) accept = !file.getName().equals(Util.getCurDateDirUtc());
+                    return accept;
                 }
             });
 
+            Arrays.sort(dateDirs);
+
             for(File dateDir: dateDirs)
             {
-                File[] files = dateDir.listFiles(new FilenameFilter()
-                {
-                    @Override
-                    public boolean accept(File dir, String name)
-                    {
-                        return name.endsWith(".json");
-                    }
-                });
+                System.out.println(Util.getDbDateTimeEst() + " started inserting json files from " + dateDir.getName());
 
-                for(File file: files)
+                for(File file: getFilesEndsWith(dateDir, "page.json"))
                 {
-                    if(file.getName().endsWith("page.json"))
-                    {
-                        new PageInserter(file).processPage();
-                    }
+                    new PageInserter(file).processPage();
                 }
 
-                for(File file: files)
+                for(File file: getFilesEndsWith(dateDir, "post.json"))
                 {
-                    if(file.getName().endsWith("post.json"))
-                    {
-                        new PostInserter(file).processPost();
-                    }
+                    new PostInserter(file).processPost();
                 }
 
-                for(File file: files)
+                for(File file: getFilesEndsWith(dateDir, "post_comments.json"))
                 {
-                    if(file.getName().endsWith("post_comments.json"))
-                    {
-                        new CommentsInserter(file).processComments();
-                    }
+                    new CommentsInserter(file).processComments();
                 }
 
-                for(File file: files)
+                for(File file: getFilesEndsWith(dateDir, "post_likes.json"))
                 {
-                    if(file.getName().endsWith("comment_replies.json"))
-                    {
-                        new CommentsInserter(file).processComments();
-                    }
+                    new LikesInserter(file).processLikes();
                 }
 
-                for(File file: files)
+                for(File file: getFilesEndsWith(dateDir, "comment_replies.json"))
                 {
-                    if(file.getName().endsWith("post_likes.json"))
-                    {
-                        new LikesInserter(file).processLikes();
-                    }
+                    new CommentsInserter(file).processComments();
                 }
+
+                System.out.println(Util.getDbDateTimeEst() + " completed inserting json files from " + dateDir.getName());
             }
-            Util.sleep(300);
+
+            Util.sleep(600);
         }
+    }
+
+    public static File[] getFilesEndsWith(File dateDir, final String endsWith)
+    {
+        File[] files = dateDir.listFiles(new FilenameFilter()
+        {
+            @Override
+            public boolean accept(File dir, String name)
+            {
+                return name.endsWith(endsWith);
+            }
+        });
+        return files;
     }
 
     private class CleanArchive extends Thread

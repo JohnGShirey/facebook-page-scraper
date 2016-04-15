@@ -136,7 +136,9 @@ public class Util
         }
         catch (Exception e)
         {
-            System.err.println("reading failed for url: " + url);
+            System.err.println(Util.getDbDateTimeEst() + " reading failed for url: " + url);
+            e.printStackTrace();
+            System.exit(0);
         }
         finally
         {

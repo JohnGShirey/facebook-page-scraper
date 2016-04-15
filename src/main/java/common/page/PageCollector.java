@@ -40,6 +40,10 @@ public class PageCollector extends Thread
         {
             Page page = new Page(pageJson, Util.getDbDateTimeUtc());
             page.updateDb();
+            if(Config.statsHistory)
+            {
+                page.insertPageCrawl();
+            }
         }
         else
         {
