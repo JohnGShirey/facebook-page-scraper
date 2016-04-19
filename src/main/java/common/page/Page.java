@@ -32,7 +32,10 @@ public class Page
         id = pageJson.get("id").toString();
         username = null != pageJson.get("username") ? pageJson.get("username").toString() : id;
         name =  null != pageJson.get("name") ? pageJson.get("name").toString() : null;
-        likes = null != pageJson.get("likes") ? Integer.parseInt(pageJson.get("likes").toString()) : 0;
+        // v2.4 and v2.5
+        //likes = null != pageJson.get("likes") ? Integer.parseInt(pageJson.get("likes").toString()) : 0;
+        // v2.6 - "likes" is now "fan_count"
+        likes = null != pageJson.get("fan_count") ? Integer.parseInt(pageJson.get("fan_count").toString()) : 0;
         talkingAbout = null != pageJson.get("talking_about_count") ? Integer.parseInt(pageJson.get("talking_about_count").toString()) : 0;
         checkins = null != pageJson.get("checkins") ? Integer.parseInt(pageJson.get("checkins").toString()) : 0;
         website = null != pageJson.get("website") ? pageJson.get("website").toString(): null;

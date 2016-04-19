@@ -116,7 +116,8 @@ public class CommentsInserter
             success = commentsJsonFile.renameTo(new File(path));
             if(!success)
             {
-                System.out.println(Util.getDbDateTimeEst() + " failed to move " + commentsJsonFile.getAbsolutePath() + " to " + path);
+                System.err.println(Util.getDbDateTimeEst() + " failed to move " + commentsJsonFile.getAbsolutePath() + " to " + path);
+                System.exit(0);
             }
         }
     }

@@ -13,12 +13,14 @@ import java.util.Properties;
 
 public class Config
 {
-    public static final String baseUrl = "https://graph.facebook.com/v2.5";
+    public static final String baseUrl = "https://graph.facebook.com/v2.6";
     public static final int dayInMillis = 86400000;
     public static final int hourInMillis = 3600000;
     public static final int minuteInMillis = 60000;
 
-    public static String accessToken;
+    private static String accessToken;
+    private static List<String> accessTokenPool = new ArrayList<String>();
+    private static int atPoolPointer = 0;
     public static List<String> pages = new ArrayList<String>();
 
     /* data collector specific parameters */
@@ -27,6 +29,7 @@ public class Config
     public static String since;
     public static String until;
     public static boolean collectComments;
+    public static boolean collectCommentReplies;
     public static boolean collectLikes;
     public static boolean scrapeHistory;
 
@@ -65,6 +68,17 @@ public class Config
             properties.load(inputStream);
 
             accessToken = properties.getProperty("accessToken");
+            if(null == properties.getProperty("accessTokenPool") || properties.getProperty("accessTokenPool").isEmpty())
+            {
+                if(null != accessToken && !accessToken.isEmpty())
+                {
+                    accessTokenPool.add(accessToken);
+                }
+            }
+            else
+            {
+                accessTokenPool = Arrays.asList(properties.getProperty("accessTokenPool").split("\\s*,\\s*"));
+            }
             pages = Arrays.asList(properties.getProperty("pages").split("\\s*,\\s*"));
 
             if(null != properties.getProperty("numOfScrapes") && properties.getProperty("numOfScrapes").matches("\\d+"))
@@ -83,6 +97,7 @@ public class Config
                 Config.until = Util.getDateTimeUtc(System.currentTimeMillis());
             }
             collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
+            collectCommentReplies = properties.getProperty("collectCommentReplies").toLowerCase().equals("true");
             collectLikes = properties.getProperty("collectLikes").toLowerCase().equals("true");
             scrapeHistory = properties.getProperty("scrapeHistory").toLowerCase().equals("true");
 
@@ -106,7 +121,10 @@ public class Config
             {
                 statsInterval = 5;
             }
-            statsHistory = properties.getProperty("statsHistory").toLowerCase().equals("true");
+            if(null != properties.getProperty("statsHistory") && !properties.getProperty("statsHistory").isEmpty())
+            {
+                statsHistory = properties.getProperty("statsHistory").toLowerCase().equals("true");
+            }
         }
         catch (IOException e)
         {
@@ -140,7 +158,7 @@ public class Config
 
     public static boolean isConfigValid()
     {
-        if(null == accessToken || accessToken.isEmpty())
+        if(accessTokenPool.size() == 0)
         {
             System.err.println(Util.getDbDateTimeEst() + " accessToken missing");
             return false;
@@ -238,5 +256,17 @@ public class Config
                 }
             }
         }
+    }
+
+    public static String getAccessToken()
+    {
+        // make sure access token pool pointer never goes out of bound
+        if(atPoolPointer > 0)
+        {
+            atPoolPointer = atPoolPointer % accessTokenPool.size();
+        }
+        String accessToken = accessTokenPool.get(atPoolPointer);
+        atPoolPointer = ++atPoolPointer % accessTokenPool.size();
+        return accessToken;
     }
 }

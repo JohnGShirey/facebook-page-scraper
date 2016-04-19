@@ -91,7 +91,8 @@ public class LikesInserter
             success = likesJsonFile.renameTo(new File(path));
             if(!success)
             {
-                System.out.println(Util.getDbDateTimeEst() + " failed to move " + likesJsonFile.getAbsolutePath() + " to " + path);
+                System.err.println(Util.getDbDateTimeEst() + " failed to move " + likesJsonFile.getAbsolutePath() + " to " + path);
+                System.exit(0);
             }
         }
     }

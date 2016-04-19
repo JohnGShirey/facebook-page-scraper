@@ -14,18 +14,20 @@ public class PostsCollector
     private String until;
     private List<Post> posts = new ArrayList<Post>();
     private static final String fields = "id,message,created_time,updated_time,place,tags,shares,likes.limit(1).summary(true),comments.limit(1).summary(true)";
+    private String accessToken;
 
     public PostsCollector(String username, String since, String until)
     {
         this.username = username;
         this.since = since;
         this.until = until;
+        this.accessToken = Config.getAccessToken();
     }
 
     private void collectPosts()
     {
         String url = Config.baseUrl + ("/") + username + "/posts";
-        url += "?access_token=" + Config.accessToken;
+        url += "?access_token=" + accessToken;
         url += "&include_hidden=" + true;
         url += "&since=" + since;
         url += "&until=" + until;

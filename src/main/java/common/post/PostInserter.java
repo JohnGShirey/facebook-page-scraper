@@ -74,7 +74,8 @@ public class PostInserter
             success = postJsonFile.renameTo(new File(path));
             if(!success)
             {
-                System.out.println(Util.getDbDateTimeEst() + " failed to move " + postJsonFile.getAbsolutePath() + " to " + path);
+                System.err.println(Util.getDbDateTimeEst() + " failed to move " + postJsonFile.getAbsolutePath() + " to " + path);
+                System.exit(0);
             }
 
             if(Config.scrapeHistory)

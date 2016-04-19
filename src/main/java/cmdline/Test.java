@@ -19,7 +19,7 @@ public class Test
         Config.init();
         String postId = "153080620724_10156892090815725";
         String url = Config.baseUrl + "/" + postId + "/comments";
-        url += "?access_token=" + Config.accessToken;
+        url += "?access_token=" + Config.getAccessToken();
         url += "&fields=id,message,from,comments.summary(true)&limit=1";
         JSONObject commentsJson = Util.getJson(url);
         FileWriter writer = new FileWriter("C:/z/comments.v2.json");

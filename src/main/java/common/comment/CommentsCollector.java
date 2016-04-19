@@ -21,18 +21,24 @@ public class CommentsCollector
     private String commentId;
     public JSONArray comments = new JSONArray();
     public static final String fields = "id,message,created_time,from,like_count,comment_count";
+    private String accessToken;
 
     public CommentsCollector(String username, String postId)
     {
-        this.username = username;
-        this.postId = postId;
+        init(username, postId, null);
     }
 
     public CommentsCollector(String username, String postId, String commentId)
     {
+        init(username, postId, commentId);
+    }
+
+    private void init(String username, String postId, String commentId)
+    {
         this.username = username;
         this.postId = postId;
         this.commentId = commentId;
+        this.accessToken = Config.getAccessToken();
     }
 
     public void collect()
@@ -46,7 +52,7 @@ public class CommentsCollector
         {
             url = Config.baseUrl + "/" + commentId + "/comments";
         }
-        url += "?access_token=" + Config.accessToken;
+        url += "?access_token=" + accessToken;
         url += "&fields=" + fields;
         while (url != null)
         {
@@ -100,16 +106,16 @@ public class CommentsCollector
         }
     }
 
-    public List<String> getCommentIds()
+    public List<Comment> getComments()
     {
-        List<String> commentsIds = new ArrayList<String>();
+        List<Comment> tempComments = new ArrayList<Comment>();
         Iterator itr = comments.iterator();
         while (itr.hasNext())
         {
             JSONObject comment = (JSONObject) itr.next();
-            commentsIds.add(comment.get("id").toString());
+            tempComments.add(new Comment(comment, postId, commentId));
         }
-        return commentsIds;
+        return tempComments;
     }
 
     private boolean isFetchRequired()

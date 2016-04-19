@@ -8,17 +8,22 @@ import org.json.simple.JSONObject;
 public class PageCollector extends Thread
 {
     private String username;
+    private String accessToken;
 
-    private static final String fields = "id,username,name,likes,talking_about_count,checkins,website,link,category,affiliation,about";
+    // v2.4 and v2.5
+    //private static final String fields = "id,username,name,likes,talking_about_count,checkins,website,link,category,affiliation,about";
+    // v2.6 - "likes" is now "fan_count"
+    private static final String fields = "id,username,name,fan_count,talking_about_count,checkins,website,link,category,affiliation,about";
 
     public PageCollector(String username)
     {
         this.username = username;
+        this.accessToken = Config.getAccessToken();
     }
 
     public void collect()
     {
-        String url = Config.baseUrl + "/" + username + "?fields=" + fields + "&access_token=" + Config.accessToken;
+        String url = Config.baseUrl + "/" + username + "?fields=" + fields + "&access_token=" + accessToken;
         JSONObject pageJson = Util.getJson(url);
         if(null != pageJson)
         {
@@ -34,7 +39,7 @@ public class PageCollector extends Thread
 
     public void collectStats()
     {
-        String url = Config.baseUrl + "/" + username + "?fields=" + fields + "&access_token=" + Config.accessToken;
+        String url = Config.baseUrl + "/" + username + "?fields=" + fields + "&access_token=" + accessToken;
         JSONObject pageJson = Util.getJson(url);
         if(null != pageJson)
         {
