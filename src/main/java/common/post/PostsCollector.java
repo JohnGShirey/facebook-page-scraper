@@ -13,7 +13,7 @@ public class PostsCollector
     private String since;
     private String until;
     private List<Post> posts = new ArrayList<Post>();
-    private static final String fields = "id,message,created_time,updated_time,place,tags,shares,likes.limit(1).summary(true),comments.limit(1).summary(true)";
+    private static final String fields = "id,message,created_time,updated_time,place,shares,likes.limit(1).summary(true),comments.limit(1).summary(true)";
     private String accessToken;
 
     public PostsCollector(String username, String since, String until)

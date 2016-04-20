@@ -129,7 +129,7 @@ public class DataCollector
         requests += numRequests;
         if(requests > 100)
         {
-            Util.sleep(requests/20);
+            Util.sleepMillis(requests * Config.delay);
             requests = 0;
         }
     }

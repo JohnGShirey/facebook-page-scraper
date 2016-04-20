@@ -47,6 +47,9 @@ public class Config
     public static String downloadDir;
     public static String archiveDir;
 
+    /* optional */
+    public static int delay = 1;
+
     /* used by pseudo tagger */
     public static String tagTable;
     public static List<Integer> excludeCodes = new ArrayList<Integer>();
@@ -124,6 +127,12 @@ public class Config
             if(null != properties.getProperty("statsHistory") && !properties.getProperty("statsHistory").isEmpty())
             {
                 statsHistory = properties.getProperty("statsHistory").toLowerCase().equals("true");
+            }
+
+            if(null != properties.getProperty("delay") && properties.getProperty("delay").matches("\\d+"))
+            {
+                delay = Integer.parseInt(properties.getProperty("delay"));
+                delay = delay < 1 ? 1 : delay;
             }
         }
         catch (IOException e)
