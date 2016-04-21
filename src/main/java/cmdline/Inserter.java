@@ -14,13 +14,7 @@ public class Inserter
 {
     public static void main(String[] args)
     {
-        Config.init();
-
-        if(!Config.isDbConfigValid())
-        {
-            System.err.println("Exiting. Check Configuration.");
-            System.exit(0);
-        }
+        Config.initInserter();
 
         while (true)
         {

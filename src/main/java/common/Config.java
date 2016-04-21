@@ -54,7 +54,7 @@ public class Config
     public static String tagTable;
     public static List<Integer> excludeCodes = new ArrayList<Integer>();
 
-    public static void init()
+    private static void init()
     {
         Properties properties = new Properties();
         InputStream inputStream = null;
@@ -66,8 +66,14 @@ public class Config
             }
             if(null == inputStream)
             {
-                inputStream = Config.class.getClassLoader().getResourceAsStream("config.properties");
+                inputStream = new FileInputStream(System.getProperty("user.home") + "/fb-page-scraper/config.properties");
             }
+            if(null == inputStream)
+            {
+                System.err.println("Could not find config.properties. Searched in base directory and " + System.getProperty("user.home") + "/fb-page-scraper");
+                System.exit(0);
+            }
+
             properties.load(inputStream);
 
             accessToken = properties.getProperty("accessToken");
@@ -82,57 +88,50 @@ public class Config
             {
                 accessTokenPool = Arrays.asList(properties.getProperty("accessTokenPool").split("\\s*,\\s*"));
             }
-            pages = Arrays.asList(properties.getProperty("pages").split("\\s*,\\s*"));
 
-            if(null != properties.getProperty("numOfScrapes") && properties.getProperty("numOfScrapes").matches("\\d+"))
+            if(null != properties.getProperty("pages") && !properties.getProperty("pages").isEmpty())
             {
-                numOfScrapes =  Integer.parseInt(properties.getProperty("numOfScrapes"));
+                pages = Arrays.asList(properties.getProperty("pages").split("\\s*,\\s*"));
             }
-            else
-            {
-                numOfScrapes = 0;
-            }
-            jsonDir = properties.getProperty("jsonDir");
+
+            numOfScrapes =  Integer.parseInt(properties.getProperty("numOfScrapes", "0"));
+
+            jsonDir = properties.getProperty("jsonDir", System.getProperty("user.home") + "/facebook");
+            downloadDir = jsonDir + "/download";
+            archiveDir = jsonDir + "/archive";
+
             since = properties.getProperty("since");
             until = properties.getProperty("until");
             if(null == Config.until || Config.until.isEmpty() || !Config.until.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
             {
                 Config.until = Util.getDateTimeUtc(System.currentTimeMillis());
             }
-            collectComments = properties.getProperty("collectComments").toLowerCase().equals("true");
-            collectCommentReplies = properties.getProperty("collectCommentReplies").toLowerCase().equals("true");
-            collectLikes = properties.getProperty("collectLikes").toLowerCase().equals("true");
-            scrapeHistory = properties.getProperty("scrapeHistory").toLowerCase().equals("true");
+
+            collectComments = properties.getProperty("collectComments", "false").toLowerCase().equals("true");
+            collectCommentReplies = properties.getProperty("collectCommentReplies", "false").toLowerCase().equals("true");
+            collectLikes = properties.getProperty("collectLikes", "false").toLowerCase().equals("true");
+            scrapeHistory = properties.getProperty("scrapeHistory", "false").toLowerCase().equals("true");
 
             dbUrl = properties.getProperty("dbUrl");
             dbUser = properties.getProperty("dbUser");
             dbPass = properties.getProperty("dbPass");
 
-            if(null != properties.getProperty("statsDepth") && properties.getProperty("statsDepth").matches("\\d+"))
-            {
-                statsDepth =  Integer.parseInt(properties.getProperty("statsDepth"));
-            }
-            else
-            {
-                statsDepth = 2;
-            }
-            if(null != properties.getProperty("statsInterval") && properties.getProperty("statsInterval").matches("\\d+"))
-            {
-                statsInterval =  Integer.parseInt(properties.getProperty("statsInterval"));
-            }
-            else
-            {
-                statsInterval = 5;
-            }
-            if(null != properties.getProperty("statsHistory") && !properties.getProperty("statsHistory").isEmpty())
-            {
-                statsHistory = properties.getProperty("statsHistory").toLowerCase().equals("true");
-            }
+            statsDepth =  Integer.parseInt(properties.getProperty("statsDepth", "5"));
+            statsInterval =  Integer.parseInt(properties.getProperty("statsInterval", "10"));
+            statsHistory = properties.getProperty("statsHistory", "true").toLowerCase().equals("true");
 
-            if(null != properties.getProperty("delay") && properties.getProperty("delay").matches("\\d+"))
+            delay = Integer.parseInt(properties.getProperty("delay", "1"));
+
+            tagTable = properties.getProperty("tagTable");
+            if(null != properties.getProperty("excludeCodes"))
             {
-                delay = Integer.parseInt(properties.getProperty("delay"));
-                delay = delay < 1 ? 1 : delay;
+                for(String s: properties.getProperty("excludeCodes").split("\\s*,\\s*"))
+                {
+                    if(s.matches("\\d+"))
+                    {
+                        excludeCodes.add(Integer.parseInt(s));
+                    }
+                }
             }
         }
         catch (IOException e)
@@ -153,19 +152,63 @@ public class Config
                 }
             }
         }
+    }
 
-        if(!isConfigValid())
+    public static void initCollector()
+    {
+        init();
+
+        if(isFetchConfigValid() && isDateValid() && isDirValid())
+        {
+            /* create download directory if it does not exist */
+            Util.buildPath("download");
+        }
+    }
+
+    public static void initInserter()
+    {
+        init();
+
+        if(isDirValid() && isDbConfigValid())
+        {
+            /* create archive directory if it does not exist */
+            Util.buildPath("archive");
+        }
+        else
         {
             System.exit(0);
         }
-
-        Util.buildPath("download");
-        downloadDir = jsonDir + "/download";
-        Util.buildPath("archive");
-        archiveDir = jsonDir + "/archive";
     }
 
-    public static boolean isConfigValid()
+    public static void initStats()
+    {
+        init();
+
+        if(!isFetchConfigValid() || !isDbConfigValid())
+        {
+            System.exit(0);
+        }
+    }
+
+    public static void initPseudoTagging()
+    {
+        init();
+
+        if(isDbConfigValid())
+        {
+            if(null == tagTable || tagTable.isEmpty())
+            {
+                System.err.println(Util.getDbDateTimeEst() + " tagTable has no value");
+                System.exit(0);
+            }
+        }
+        else
+        {
+            System.exit(0);
+        }
+    }
+
+    private static boolean isFetchConfigValid()
     {
         if(accessTokenPool.size() == 0)
         {
@@ -179,12 +222,22 @@ public class Config
             return false;
         }
 
+        return true;
+    }
+
+    private static boolean isDateValid()
+    {
         if(null == since || since.isEmpty() || !since.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
         {
             System.err.println(Util.getDbDateTimeEst() + " invalid start date (since)");
             return false;
         }
 
+        return true;
+    }
+
+    private static boolean isDirValid()
+    {
         if(null == jsonDir || jsonDir.isEmpty())
         {
             System.err.println(Util.getDbDateTimeEst() + " json directory is required");
@@ -201,7 +254,7 @@ public class Config
         return true;
     }
 
-    public static boolean isDbConfigValid()
+    private static boolean isDbConfigValid()
     {
         if(null == dbUrl || null == dbUser || null == dbPass)
         {
@@ -216,55 +269,6 @@ public class Config
         }
 
         return true;
-    }
-
-    public static void initPseudoTaggingConfig()
-    {
-        Properties properties = new Properties();
-        InputStream inputStream = null;
-        try
-        {
-            if(new File("config.properties").exists())
-            {
-                inputStream = new FileInputStream("config.properties");
-            }
-            if(null == inputStream)
-            {
-                inputStream = Config.class.getClassLoader().getResourceAsStream("config.properties");
-            }
-            properties.load(inputStream);
-
-            dbUrl = properties.getProperty("dbUrl");
-            dbUser = properties.getProperty("dbUser");
-            dbPass = properties.getProperty("dbPass");
-
-            tagTable = properties.getProperty("tagTable");
-            for(String s: properties.getProperty("excludeCodes").split("\\s*,\\s*"))
-            {
-                if(s.matches("\\d+"))
-                {
-                    excludeCodes.add(Integer.parseInt(s));
-                }
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            if(null != inputStream)
-            {
-                try
-                {
-                    inputStream.close();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     public static String getAccessToken()

@@ -17,7 +17,7 @@ public class DataCollector
 
     public static void main(String[] args) throws Exception
     {
-        Config.init();
+        Config.initCollector();
 
         int scrapeCount = 0;
 
@@ -33,7 +33,7 @@ public class DataCollector
 
             System.out.println(Util.getDbDateTimeEst() + " scraped " + scrapeCount + " time(s)");
 
-            Config.init();
+            Config.initCollector();
 
             if(Config.numOfScrapes != 0 && scrapeCount >= Config.numOfScrapes)
             {

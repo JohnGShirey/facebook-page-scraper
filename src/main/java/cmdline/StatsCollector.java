@@ -8,11 +8,11 @@ public class StatsCollector
 {
     public static void main(String[] args)
     {
-        Config.init();
+        Config.initStats();
 
         int depthDays = 1;
 
-        while(Config.isDbConfigValid())
+        while(true)
         {
             long statsSlice = depthDays * Config.dayInMillis;
 
@@ -52,7 +52,7 @@ public class StatsCollector
                 depthDays = 1;
             }
 
-            Config.init();
+            Config.initStats();
         }
     }
 }

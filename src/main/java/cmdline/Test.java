@@ -16,7 +16,7 @@ public class Test
 {
     public static void main(String[] args) throws IOException
     {
-        Config.init();
+        Config.initCollector();
         String postId = "153080620724_10156892090815725";
         String url = Config.baseUrl + "/" + postId + "/comments";
         url += "?access_token=" + Config.getAccessToken();

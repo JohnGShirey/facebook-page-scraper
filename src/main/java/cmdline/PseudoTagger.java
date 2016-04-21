@@ -15,13 +15,7 @@ public class PseudoTagger
 {
     public static void main(String[] args)
     {
-        Config.initPseudoTaggingConfig();
-
-        if(!Config.isDbConfigValid())
-        {
-            System.err.println("Exiting. Check Configuration.");
-            System.exit(0);
-        }
+        Config.initPseudoTagging();
 
         while (true)
         {
