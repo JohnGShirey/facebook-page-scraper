@@ -66,7 +66,7 @@ public class Config
             }
             if(null == inputStream)
             {
-                inputStream = new FileInputStream(System.getProperty("user.home") + "/fb-page-scraper/config.properties");
+                inputStream = new FileInputStream(System.getProperty("user.home") + "/facebook/config.properties");
             }
             if(null == inputStream)
             {
@@ -154,14 +154,24 @@ public class Config
         }
     }
 
-    public static void initCollector()
+    public static void initDataCollector()
     {
         init();
 
-        if(isFetchConfigValid() && isDateValid() && isDirValid())
+        if(isFetchConfigValid() && isDateValid() && isJsonDirValid())
         {
             /* create download directory if it does not exist */
             Util.buildPath("download");
+        }
+    }
+
+    public static void initImageCollector()
+    {
+        init();
+
+        if(!isFetchConfigValid() || !isJsonDirValid())
+        {
+            System.exit(0);
         }
     }
 
@@ -169,7 +179,7 @@ public class Config
     {
         init();
 
-        if(isDirValid() && isDbConfigValid())
+        if(isJsonDirValid() && isDbConfigValid())
         {
             /* create archive directory if it does not exist */
             Util.buildPath("archive");
@@ -236,7 +246,7 @@ public class Config
         return true;
     }
 
-    private static boolean isDirValid()
+    private static boolean isJsonDirValid()
     {
         if(null == jsonDir || jsonDir.isEmpty())
         {
@@ -247,7 +257,7 @@ public class Config
         File jsonDir = new File(Config.jsonDir);
         if(!jsonDir.exists() || !jsonDir.isDirectory())
         {
-            System.err.println(Util.getDbDateTimeEst() + " invalid json directory");
+            System.err.println(Util.getDbDateTimeEst() + " invalid json directory " + Config.jsonDir);
             return false;
         }
 

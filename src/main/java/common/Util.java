@@ -142,12 +142,14 @@ public class Util
             {
                 if(retries < 5)
                 {
+                    System.err.println(e.getMessage());
                     System.err.println(Util.getDbDateTimeEst() + " retrying fetch url: " + url);
-                    Util.sleep(10);
+                    Util.sleep(20);
                 }
                 else
                 {
                     System.err.println(Util.getDbDateTimeEst() + " reading failed for url: " + url);
+                    System.err.println(e.getMessage());
                     e.printStackTrace();
                     System.exit(0);
                 }

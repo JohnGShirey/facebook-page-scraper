@@ -10,19 +10,20 @@ public class StatsCollector
     {
         Config.initStats();
 
-        int depthDays = 1;
+        //int depthDays = 1;
 
         while(true)
         {
-            long statsSlice = depthDays * Config.dayInMillis;
+            //long statsSlice = depthDays * Config.dayInMillis;
+            long statsSlice = Config.statsDepth * Config.dayInMillis;
 
             long statsStartedAt = System.currentTimeMillis();
 
             long statsSince = statsStartedAt - statsSlice;
 
-            long configSince = Util.toMillis(Config.since);
+            //long configSince = Util.toMillis(Config.since);
 
-            statsSince = statsSince > configSince ? statsSince : configSince;
+            //statsSince = statsSince > configSince ? statsSince : configSince;
 
             String tempSince = Util.getDateTimeUtc(statsSince);
 
@@ -47,10 +48,10 @@ public class StatsCollector
 
             Util.sleep(Config.statsInterval * 60);
 
-            if(++depthDays > Config.statsDepth)
+            /*if(++depthDays > Config.statsDepth)
             {
                 depthDays = 1;
-            }
+            }*/
 
             Config.initStats();
         }
