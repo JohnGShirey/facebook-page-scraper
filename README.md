@@ -13,29 +13,29 @@ Facebook Page Scraper is especially built for keeping it running and collecting 
 
 ## Quick start guide
  
-* Download *config.properties.template* and *fb-data-collector.jar* from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
+* Download `config.properties.template` and `fb-data-collector.jar` from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
 
-* Rename *config.properties.template* to *config.properties*, open in a text editor and make relevant changes by following inline instructions
+* Rename `config.properties.template` to `config.properties`, open in a text editor and make relevant changes by following inline instructions
 
 * Start downloading data  
     <pre>java -jar fb-data-collector.jar >> data.log 2>&1 &</pre>
 
 Notes:  
-    Your *config.properties* and your *jar* files should be located in the same directory  
-    Data will be downloaded to data download folder *baseDir/download*
+    Your config.properties and your jar files should be located in the same directory  
+    Data will be downloaded to data download folder baseDir/download
 
 ## Insert data into database
 
 * Install MySQL server
 
-* Download *db.schema.sql* and *fb-inserter.jar* from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
+* Download `db.schema.sql` and `fb-inserter.jar` from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
 
 * Create facebook database
      <pre>CREATE DATABASE facebook 
 DEFAULT CHARACTER SET utf8 
 DEFAULT COLLATE utf8_general_ci;</pre> 
 
-* Fill database configurations in your *config.properties* file
+* Fill in database configurations in your `config.properties` file
 
 * Create tables in your `facebook` database
      <pre>mysql -u root -pPassword facebook < db.schema.sql</pre>
@@ -43,21 +43,21 @@ DEFAULT COLLATE utf8_general_ci;</pre>
 * Start inserting data into `facebook` database  
     <pre>java -jar fb-inserter.jar >> insert.log 2>&1 &</pre>
 
-Note: After inserting into database, your data will be moved to data archive folder *baseDir/archive* 
+Note: After inserting into database, your data will be moved to data archive folder baseDir/archive 
 
 ## Download Images
 
-* Download *config.properties.template* and *fb-image-collector.jar* from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
+* Download `config.properties.template` and `fb-image-collector.jar` from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
 
-* Rename ***config.properties.template*** to *config.properties*, open in a text editor and make relevant changes by following inline instructions
+* Rename `config.properties.template` to `config.properties`, open in a text editor and make relevant changes by following inline instructions
 
 * Start downloading images  
     <pre>java -jar fb-image-collector.jar >> image.log 2>&1 &</pre>
 
 ## Credits and Citing
 
-This software is maintained by  
-* [Yatish Hegde] (https://github.com/yhegde)  
+This software is maintained by
+* [Yatish Hegde] (https://github.com/yhegde)
 **Cite as**  
     <pre>fb-page-scraper (2016). Version 1.2. DOI: 10.5281/zenodo.50451</pre>
 
