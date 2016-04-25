@@ -1,7 +1,6 @@
 # Facebook Page Scraper
 
-[![alt text] (https://zenodo.org/badge/19221/yhegde/fb-page-scraper.svg)]
-(https://zenodo.org/badge/latestdoi/19221/yhegde/fb-page-scraper)
+[![DOI](https://zenodo.org/badge/19221/yhegde/fb-page-scraper.svg)](https://zenodo.org/badge/latestdoi/19221/yhegde/fb-page-scraper)
 
 Facebook Page Scraper is a tool for collecting data from public facebook pages. This tool uses Facebook's Graph API to collect data. Using this tool you can download and archive the data in json files, insert them into MySQL database, or download images from public pages.
 
