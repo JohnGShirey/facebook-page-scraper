@@ -18,7 +18,9 @@ This tool is especially built for keeping it running and collecting large amount
     <pre>java -jar fb-data-collector.jar >> data.log 2>&1 &</pre>
 
 Notes:
+
 Your config.properties and your *.jar files should be located in the same directory
+
 Data will be downloaded into your "baseDir/download/" folder
 
 ## Insert data into database
