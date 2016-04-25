@@ -54,6 +54,19 @@ Note: After inserting into database, your data will be moved to data archive fol
 * Start downloading images  
     <pre>java -jar fb-image-collector.jar >> image.log 2>&1 &</pre>
 
+Note: Images will downloaded in the images folder baseDir/images
+
+## Running Stats Collector
+
+If you have a requirement to keep collecting stats data (eg likes count, comments count, shares count, page likes count) at regular intervals of time for future and past posts from public pages, then you should leave this tool running. This tool will not download json, it will directly write the stats to the database. To keep the history of previous stats for posts, you should set *statsHistory=true* in your config.properties file
+
+* Download `config.properties.template` and `fb-stats-collector.jar` from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
+
+* Rename `config.properties.template` to `config.properties`, open in a text editor and make relevant changes by following inline instructions
+
+* Start downloading images  
+    <pre>java -jar fb-stats-collector.jar >> stats.log 2>&1 &</pre>
+
 ## Credits and Citing
 
 This software is maintained by
