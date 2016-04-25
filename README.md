@@ -49,7 +49,7 @@ Note: After inserting into database, your data will be moved to data archive fol
 
 * Download *config.properties.template* and *fb-image-collector.jar* from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
 
-* Rename *config.properties.template* to *config.properties*, open in a text editor and make relevant changes by following inline instructions
+* Rename ***config.properties.template*** to *config.properties*, open in a text editor and make relevant changes by following inline instructions
 
 * Start downloading images  
     <pre>java -jar fb-image-collector.jar >> image.log 2>&1 &</pre>
@@ -57,8 +57,9 @@ Note: After inserting into database, your data will be moved to data archive fol
 ## Credits and Citing
 
 This software is maintained by  
-[Yatish Hegde] (https://github.com/yhegde)  
-Cite as <pre>fb-page-scraper (2016). Version 1.2. DOI: 10.5281/zenodo.50451</pre>
+* [Yatish Hegde] (https://github.com/yhegde)  
+**Cite as**  
+    <pre>fb-page-scraper (2016). Version 1.2. DOI: 10.5281/zenodo.50451</pre>
 
 ## License  
 Copyright [2016] [Yatish Hegde]
