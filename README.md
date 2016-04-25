@@ -57,7 +57,8 @@ Note: After inserting into database, your data will be moved to data archive fol
 ## Credits and Citing
 
 This software is maintained by
-* [Yatish Hegde] (https://github.com/yhegde)
+* [Yatish Hegde] (https://github.com/yhegde)  
+
 **Cite as**  
     <pre>fb-page-scraper (2016). Version 1.2. DOI: 10.5281/zenodo.50451</pre>
 
