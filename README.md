@@ -3,7 +3,7 @@
 [![alt text] (https://zenodo.org/badge/19221/yhegde/fb-page-scraper.svg)]
 (https://zenodo.org/badge/latestdoi/19221/yhegde/fb-page-scraper)
 
-Facebook Page Scraper is a tool for collecting data from public facebook pages. This tool uses Facebook's Graph API to collect data. Using this tool you can download and archive the data in json files, insert then into MySQL database, and download images
+Facebook Page Scraper is a tool for collecting data from public facebook pages. This tool uses Facebook's Graph API to collect data. Using this tool you can download and archive the data in json files, insert them into MySQL database, or download images from public pages.
 
 This tool is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tool.      
 
@@ -17,20 +17,26 @@ This tool is especially built for keeping it running and collecting large amount
 * Start downloading data  
     <pre>java -jar fb-data-collector.jar >> data.log 2>&1 &</pre>
 
+Notes:
+Your config.properties and your *.jar files should be located in the same directory
+Data will be downloaded into your "baseDir/download/" folder
+
+## Insert data into database
+
 * Download **db.schema.sql** and **fb-inserter.jar** from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
 
-* Create facebook database  
+* Create facebook database
      <pre>CREATE DATABASE facebook 
 DEFAULT CHARACTER SET utf8 
 DEFAULT COLLATE utf8_general_ci;</pre> 
 
-* Create tables in facebook database
+* Create tables in your `facebook` database
      <pre>mysql -u root -pPassword facebook < db.schema.sql</pre>
 
-* Start inserting data into database  
+* Start inserting data into `facebook` database  
     <pre>java -jar fb-inserter.jar >> insert.log 2>&1 &</pre>
 
-Note: Your config.properties and your *.jar files should be located in the same directory
+Note: After insert into database, your data will be moved to archive folder "baseDir/archive/" 
 
 ## License  
 Copyright [2015] [Yatish Hegde]
