@@ -57,11 +57,11 @@ This software is maintained by
 
 Cite as  
 
-<pre>fb-page-scraper (2016): Version 1.2. DOI: 10.5281/zenodo.50451</pre>
+<pre>fb-page-scraper (2016). Version 1.2. DOI: 10.5281/zenodo.50451</pre>
 
 
 ## License  
-Copyright [2015] [Yatish Hegde]
+Copyright [2016] [Yatish Hegde]
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this software except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
