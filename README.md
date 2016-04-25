@@ -54,7 +54,7 @@ Note: After inserting into database, your data will be moved to data archive fol
 * Start downloading images  
     <pre>java -jar fb-image-collector.jar >> image.log 2>&1 &</pre>
 
-Note: Images will downloaded in the images folder baseDir/images
+Note: Images will be downloaded in the images folder baseDir/images
 
 ## Running Stats Collector
 
