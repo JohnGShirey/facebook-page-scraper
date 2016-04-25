@@ -5,7 +5,9 @@
 
 Facebook Page Scraper is a tool for collecting data from public facebook pages. This tool uses Facebook's Graph API to collect data. Using this tool you can download and archive the data in json files, insert them into MySQL database, or download images from public pages.
 
-This tool is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tool.      
+This tool is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tool. 
+
+<pre>Warning: If required by law, you should obtain necessary permissions for downloading data as given in Facebook's terms and conditions, or concerned authority who manages the Facebook pages from which you are downloading data, or as per any applicable law and regulations. This tool does NOT grant you permissions to dowload data from Facebook. You should obtain the permissions yourself.</pre>
 
 ## Quick start guide
 * Install MySQL server
@@ -19,7 +21,7 @@ This tool is especially built for keeping it running and collecting large amount
 
 Notes:  
     Your config.properties and your *.jar files should be located in the same directory  
-    Data will be downloaded into your "baseDir/download/" folder
+    Data will be downloaded to data download folder "baseDir/download/"
 
 ## Insert data into database
 
@@ -36,7 +38,9 @@ DEFAULT COLLATE utf8_general_ci;</pre>
 * Start inserting data into `facebook` database  
     <pre>java -jar fb-inserter.jar >> insert.log 2>&1 &</pre>
 
-Note: After insert into database, your data will be moved to archive folder "baseDir/archive/" 
+Note: After insert into database, your data will be moved to data archive folder "baseDir/archive/" 
+
+## Download Images
 
 ## License  
 Copyright [2015] [Yatish Hegde]
