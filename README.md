@@ -7,7 +7,7 @@ Facebook Page Scraper is a tool for collecting data from public facebook pages. 
 
 This tool is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tool. 
 
-<pre>Warning: If required by law, you should obtain necessary permissions for downloading data as given in Facebook's terms and conditions, or concerned authority who manages the Facebook pages from which you are downloading data, or as per any applicable law and regulations. This tool does NOT grant you permissions to dowload data from Facebook. You should obtain the permissions yourself.</pre>
+<pre>Warning: If required by law, you should obtain necessary permissions for downloading data as given in Facebook's terms and conditions, or from concerned authority who manages the Facebook pages, or as per any other applicable law and regulations. This tool does NOT grant you permissions to dowload data from Facebook. You should obtain the permissions yourself.</pre>
 
 ## Quick start guide
 * Install MySQL server
