@@ -58,7 +58,7 @@ Note: Images will downloaded in the images folder baseDir/images
 
 ## Running Stats Collector
 
-If you have a requirement to keep collecting stats data (eg likes count, comments count, shares count, page likes count) at regular intervals of time for future and past posts from public pages, then you should leave this tool running. This tool will not download json, it will directly write the stats to the database. To keep the history of previous stats for posts, you should set *statsHistory=true* in your config.properties file
+If you have a requirement to keep collecting stats data (eg. likes count, comments count, shares count, page likes count) at regular intervals of time about past and future posts from public pages, then you should leave this tool running. This tool will not download json, it will directly write the stats to the database. To keep the history of previous stats for posts, you should set *statsHistory=true* in your config.properties file
 
 * Download `config.properties.template` and `fb-stats-collector.jar` from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
 
