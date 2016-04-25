@@ -32,6 +32,8 @@ Notes:
 DEFAULT CHARACTER SET utf8 
 DEFAULT COLLATE utf8_general_ci;</pre> 
 
+* Fill database configurations in your config.properties file
+
 * Create tables in your `facebook` database
      <pre>mysql -u root -pPassword facebook < db.schema.sql</pre>
 
@@ -41,6 +43,23 @@ DEFAULT COLLATE utf8_general_ci;</pre>
 Note: After insert into database, your data will be moved to data archive folder "baseDir/archive/" 
 
 ## Download Images
+
+* Download **config.properties.template** and **fb-image-collector.jar** from [latest release] (https://github.com/yhegde/fb-page-scraper/releases/)
+
+* Rename config.properties.template to **config.properties**, open in a text editor and make relevant changes by following inline instructions
+
+* Start downloading images  
+    <pre>java -jar fb-image-collector.jar >> image.log 2>&1 &</pre>
+
+## Credits and Citing
+
+This software is maintained by  
+* [Yatish Hegde] (https://github.com/yhegde)  
+
+Cite as  
+
+<pre>fb-page-scraper (2016): Version 1.2. DOI: 10.5281/zenodo.50451</pre>
+
 
 ## License  
 Copyright [2015] [Yatish Hegde]
