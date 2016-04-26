@@ -7,7 +7,7 @@ import db.DbManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.FileWriter;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -96,7 +96,7 @@ public class CommentsCollector
         }
         try
         {
-            FileWriter writer = new FileWriter(path);
+            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "UTF-8"));
             commentsJson.writeJSONString(writer);
             writer.close();
         }

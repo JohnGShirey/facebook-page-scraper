@@ -51,6 +51,10 @@ public class AlbumsCollector
             else
             {
                 System.err.println(Util.getDbDateTimeEst() + " reading albums failed for url: " + url);
+                if(Config.exitWhenFetchFails)
+                {
+                    System.exit(0);
+                }
             }
         }
     }

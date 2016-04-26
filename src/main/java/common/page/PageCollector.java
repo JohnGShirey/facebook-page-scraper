@@ -9,6 +9,7 @@ public class PageCollector extends Thread
 {
     private String username;
     private String accessToken;
+    private Page page;
 
     // v2.4 and v2.5
     //private static final String fields = "id,username,name,likes,talking_about_count,checkins,website,link,category,affiliation,about";
@@ -27,13 +28,16 @@ public class PageCollector extends Thread
         JSONObject pageJson = Util.getJson(url);
         if(null != pageJson)
         {
-            Page page = new Page(pageJson, null);
+            page = new Page(pageJson, null);
             page.writeJson();
         }
         else
         {
             System.err.println(Util.getDbDateTimeEst() + " cannot read data for facebook page: " + username);
-            System.exit(0);
+            if(Config.exitWhenFetchFails)
+            {
+                System.exit(0);
+            }
         }
     }
 
@@ -53,7 +57,15 @@ public class PageCollector extends Thread
         else
         {
             System.err.println(Util.getDbDateTimeEst() + " cannot read data for facebook page: " + username);
-            System.exit(0);
+            if(Config.exitWhenFetchFails)
+            {
+                System.exit(0);
+            }
         }
+    }
+
+    public Page getPage()
+    {
+        return page;
     }
 }

@@ -4,7 +4,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -12,7 +11,6 @@ import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -113,7 +111,7 @@ public class Util
      */
     public static String buildPath(String... directories)
     {
-        String dir = Config.jsonDir;
+        String dir = Config.baseDir;
         for(String temp: directories)
         {
             dir = dir + "/" + temp;
@@ -140,18 +138,16 @@ public class Util
             }
             catch (Exception e)
             {
+                System.err.println(e.getMessage());
                 if(retries < 5)
                 {
-                    System.err.println(e.getMessage());
                     System.err.println(Util.getDbDateTimeEst() + " retrying fetch url: " + url);
                     Util.sleep(20);
                 }
                 else
                 {
                     System.err.println(Util.getDbDateTimeEst() + " reading failed for url: " + url);
-                    System.err.println(e.getMessage());
                     e.printStackTrace();
-                    System.exit(0);
                 }
             }
             finally

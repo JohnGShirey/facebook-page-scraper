@@ -1,44 +1,64 @@
-# Rename this file to config.properties
-# Place the config.properties file in the same directory as your fb-collector.jar before running
-# Get a facebook access token for reading pages (getting an extended token is STRONGLY recommended)
-# This is required and cannot be empty
-accessToken=
+# Rename or copy this file to config.properties
+# Place the config.properties file in the same directory as your *.jar files before running jar files
+# Alternatively, you can also place the config.properties file in your <user-home>/facebook/ directory
+# Get a facebook user access token for reading public pages (getting an extended token is STRONGLY recommended)
+# if you want to use more than one access tokens then separate then by comma (",")
+# this field is required for running fb-data-collector.jar, fb-image-collector.jar, fb-stats-collector.jar
+accessTokens=
 # Comma separated facebook public pages. You can use page names or page Ids
 # For example, if you want to collect data from pubic pages https://facebook.com/Microsoft
 # and https://facebook.com/Google then set pages as:
 # pages=Microsoft,Google
+# this field is required for running fb-data-collector.jar, fb-image-collector.jar, fb-stats-collector.jar
 pages=
-# Set this to false only if you do not want to import data into a mysql database
-updateDb=true
-# jdbc connection url to connect to your database
-dbUrl=jdbc:mysql://<mysql-server-ip-address>:3306/<database-name>
-# Database username
-dbUser=
-# Database password
-dbPass=
+# Full path to your facebook data collection directory
+# this field is required for running fb-data-collector.jar, fb-image-collector.jar
+baseDir=
 # Datetime in UTC format
 # It is the start datetime from when you want the data for facebook pages to be collected
 # example:
 # since=2015-10-01T00:00:00
+# this field is required for running fb-data-collector.jar
 since=
 # Datetime in UTC format
 # It is the end datetime until you want the data for facebook pages to be collected
 # You SHOULD leave this blank if you want to keep the scraper running for fetching historic, current and future data for pages
-# Enter a date only if your end datetime is a historic datetime
+# Enter end datetime only if you have one
+# if left blank, end date is current date and time
 until=
-# Set this to true only if you want to run the scraper once and don't need to keep fetching data
-collectOnce=false
+# Set how many times you want to scrape the pages from start date (since) till end date (until)
+# If you want the scraper continuously scrape the pages, then set it to "0" (zero).
+numOfScrapes=1
 # Set this to true if you want to fetch comments for the posts
 collectComments=false
+# Set this to true if you want to fetch comment replies for the post comments
+collectCommentReplies=false
 # Set this to true if you want to fetch likes for the posts
 # You do not have to set this to true if you want the likes count
 # You need this only if you want who liked the posts
 collectLikes=false
-# Set this to true only if you want to download data in json format
-collectJson=false
-# Full path to your json data directory
-# You need this only if you have set collectJson=true (see above)
-jsonDir=
-# Use this only if it is absolutely required for your research
-# Set this to true if you want to keep statistics of previous crawls
-crawlHistory=false
+# Use this only if it is required for your data collection requirements
+# Set this to true if you want to keep history of previous scrapes - eg. counts of likes, comments, posts, shares, page likes
+# this field is used by fb-data-collector.jar
+scrapeHistory=false
+# jdbc connection url to connect to your mysql database
+# database connections are  required for running db-inserter.jar and fb-stats-collector.jar
+dbUrl=jdbc:mysql://your-mysql-server-ip-address:3306/your-facebook-database
+# Database username
+dbUser=
+# Database password
+dbPass=
+#
+# number of days before current datetime you want to start collecting data from
+# note that the stats collector does not collect comments data and it does not download json files (it only writes/updates database)
+statsDepth=1
+# interval in number of minutes you want the stats collector to run again
+statsInterval=20
+# Use this only if it is required for your data collection requirements
+# Set this to true if you want to keep history of previous stats of likes, comments, posts, shares, page likes
+# this field is used by fb-stats-collector.jar
+statsHistory=false
+#
+# if you are hitting rate limits and exceptions are thrown, increase the delay to a higher value (eg, 100, 500 etc.)
+# used by fb-data-collector
+delay=20

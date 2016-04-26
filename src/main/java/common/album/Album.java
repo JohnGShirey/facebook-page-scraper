@@ -3,7 +3,7 @@ package common.album;
 import common.Util;
 import org.json.simple.JSONObject;
 
-import java.io.FileWriter;
+import java.io.*;
 
 public class Album
 {
@@ -27,7 +27,7 @@ public class Album
         String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_" + getId() + "_album.json";
         try
         {
-            FileWriter writer = new FileWriter(path);
+            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "UTF-8"));
             getAlbumJson().writeJSONString(writer);
             writer.close();
         }

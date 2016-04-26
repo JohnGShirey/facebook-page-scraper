@@ -29,7 +29,7 @@ public class Photo
         String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_" + id + "_photo.json";
         try
         {
-            FileWriter writer = new FileWriter(path);
+            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "UTF-8"));
             photoJson.writeJSONString(writer);
             writer.close();
         }

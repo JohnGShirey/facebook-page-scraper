@@ -4,6 +4,7 @@ import common.*;
 import common.comment.Comment;
 import common.comment.CommentsCollector;
 import common.like.LikesCollector;
+import common.page.Page;
 import common.page.PageCollector;
 import common.post.Post;
 import common.post.PostsCollector;
@@ -44,20 +45,25 @@ public class DataCollector
 
     public static void collectData()
     {
+        List<Page> pages = new ArrayList<Page>();
         for(String username: Config.pages)
         {
             PageCollector pageCollector = new PageCollector(username);
             pageCollector.collect();
+            if(null != pageCollector.getPage())
+            {
+                pages.add(pageCollector.getPage());
+            }
         }
         delay(Config.pages.size());
 
         List<Post> posts = new ArrayList<Post>();
-        for(String username: Config.pages)
+        for(Page page: pages)
         {
-            PostsCollector postsCollector = new PostsCollector(username, Config.since, Config.until);
+            PostsCollector postsCollector = new PostsCollector(page.getUsername(), Config.since, Config.until);
             postsCollector.collect();
             posts.addAll(postsCollector.getPosts());
-            System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCollector.getPosts().size() + " posts from page " + username);
+            System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCollector.getPosts().size() + " posts from page " + page.getUsername());
             delay(postsCollector.getPosts().size());
         }
         System.out.println(Util.getDbDateTimeEst() + " fetched total " + posts.size() + " posts from " + Config.pages.size() + " pages");

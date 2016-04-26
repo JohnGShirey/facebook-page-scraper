@@ -5,7 +5,7 @@ import common.Util;
 import db.DbManager;
 import org.json.simple.JSONObject;
 
-import java.io.FileWriter;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -63,7 +63,7 @@ public class Page
         String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_" + id + "_page.json";
         try
         {
-            FileWriter writer = new FileWriter(path);
+            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "UTF-8"));
             json.writeJSONString(writer);
             writer.close();
         }

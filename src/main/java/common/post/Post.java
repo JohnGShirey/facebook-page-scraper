@@ -6,7 +6,7 @@ import common.page.Page;
 import db.DbManager;
 import org.json.simple.JSONObject;
 
-import java.io.FileWriter;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -117,7 +117,7 @@ public class Post
         String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_" + id + "_post.json";
         try
         {
-            FileWriter writer = new FileWriter(path);
+            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "UTF-8"));
             getPost().writeJSONString(writer);
             writer.close();
         }

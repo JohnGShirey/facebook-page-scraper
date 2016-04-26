@@ -8,7 +8,6 @@ import common.post.PostInserter;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.List;
 
 public class Inserter
 {
@@ -25,7 +24,8 @@ public class Inserter
                 {
                     boolean accept = file.isDirectory();
                     if(accept) accept = file.getName().matches("\\d{4}-\\d{2}-\\d{2}");
-                    if(accept) accept = !file.getName().equals(Util.getCurDateDirUtc());
+                    // uncomment this line if you don't want to insert from current date dir
+                    // if(accept) accept = !file.getName().equals(Util.getCurDateDirUtc());
                     return accept;
                 }
             });
@@ -79,55 +79,5 @@ public class Inserter
             }
         });
         return files;
-    }
-
-    private class CleanArchive extends Thread
-    {
-        public void run()
-        {
-            while (true)
-            {
-                File[] candidateDirs = new File(Config.archiveDir).listFiles(new FileFilter()
-                {
-                    @Override
-                    public boolean accept(File file)
-                    {
-                        return file.isDirectory();
-                    }
-                });
-                for(File candiDir: candidateDirs)
-                {
-                    File[] dateDirs = candiDir.listFiles(new FileFilter()
-                    {
-                        @Override
-                        public boolean accept(File file)
-                        {
-                            return file.isDirectory();
-                        }
-                    });
-                    for(File dateDir: dateDirs)
-                    {
-                        File[] pageFiles = dateDir.listFiles(new FilenameFilter()
-                        {
-                            @Override
-                            public boolean accept(File dir, String name)
-                            {
-                                return name.endsWith(".json") && name.contains("_page_");
-                            }
-                        });
-
-                        File[] postFiles = dateDir.listFiles(new FilenameFilter()
-                        {
-                            @Override
-                            public boolean accept(File dir, String name)
-                            {
-                                return name.endsWith(".json") && name.contains("_post_");
-                            }
-                        });
-                    }
-                }
-                Util.sleep(300);
-            }
-        }
     }
 }

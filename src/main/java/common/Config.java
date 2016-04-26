@@ -18,14 +18,13 @@ public class Config
     public static final int hourInMillis = 3600000;
     public static final int minuteInMillis = 60000;
 
-    private static String accessToken;
-    private static List<String> accessTokenPool = new ArrayList<String>();
+    private static List<String> accessTokens = new ArrayList<String>();
     private static int atPoolPointer = 0;
     public static List<String> pages = new ArrayList<String>();
 
     /* data collector specific parameters */
     public static int numOfScrapes;
-    public static String jsonDir;
+    public static String baseDir;
     public static String since;
     public static String until;
     public static boolean collectComments;
@@ -49,6 +48,8 @@ public class Config
 
     /* optional */
     public static int delay = 1;
+
+    public static boolean exitWhenFetchFails;
 
     /* used by pseudo tagger */
     public static String tagTable;
@@ -76,17 +77,9 @@ public class Config
 
             properties.load(inputStream);
 
-            accessToken = properties.getProperty("accessToken");
-            if(null == properties.getProperty("accessTokenPool") || properties.getProperty("accessTokenPool").isEmpty())
+            if(null != properties.getProperty("accessTokens") && !properties.getProperty("accessTokens").isEmpty())
             {
-                if(null != accessToken && !accessToken.isEmpty())
-                {
-                    accessTokenPool.add(accessToken);
-                }
-            }
-            else
-            {
-                accessTokenPool = Arrays.asList(properties.getProperty("accessTokenPool").split("\\s*,\\s*"));
+                accessTokens = Arrays.asList(properties.getProperty("accessTokens").split("\\s*,\\s*"));
             }
 
             if(null != properties.getProperty("pages") && !properties.getProperty("pages").isEmpty())
@@ -96,9 +89,9 @@ public class Config
 
             numOfScrapes =  Integer.parseInt(properties.getProperty("numOfScrapes", "0"));
 
-            jsonDir = properties.getProperty("jsonDir", System.getProperty("user.home") + "/facebook");
-            downloadDir = jsonDir + "/download";
-            archiveDir = jsonDir + "/archive";
+            baseDir = properties.getProperty("baseDir", System.getProperty("user.home") + "/facebook");
+            downloadDir = baseDir + "/download";
+            archiveDir = baseDir + "/archive";
 
             since = properties.getProperty("since");
             until = properties.getProperty("until");
@@ -121,6 +114,8 @@ public class Config
             statsHistory = properties.getProperty("statsHistory", "true").toLowerCase().equals("true");
 
             delay = Integer.parseInt(properties.getProperty("delay", "1"));
+
+            exitWhenFetchFails = properties.getProperty("exitWhenFetchFails", "true").toLowerCase().equals("true");
 
             tagTable = properties.getProperty("tagTable");
             if(null != properties.getProperty("excludeCodes"))
@@ -158,7 +153,7 @@ public class Config
     {
         init();
 
-        if(isFetchConfigValid() && isDateValid() && isJsonDirValid())
+        if(isFetchConfigValid() && isDateValid() && isBaseDirValid())
         {
             /* create download directory if it does not exist */
             Util.buildPath("download");
@@ -169,7 +164,7 @@ public class Config
     {
         init();
 
-        if(!isFetchConfigValid() || !isJsonDirValid())
+        if(!isFetchConfigValid() || !isBaseDirValid())
         {
             System.exit(0);
         }
@@ -179,7 +174,7 @@ public class Config
     {
         init();
 
-        if(isJsonDirValid() && isDbConfigValid())
+        if(isBaseDirValid() && isDbConfigValid())
         {
             /* create archive directory if it does not exist */
             Util.buildPath("archive");
@@ -220,7 +215,7 @@ public class Config
 
     private static boolean isFetchConfigValid()
     {
-        if(accessTokenPool.size() == 0)
+        if(accessTokens.size() == 0)
         {
             System.err.println(Util.getDbDateTimeEst() + " accessToken missing");
             return false;
@@ -246,20 +241,22 @@ public class Config
         return true;
     }
 
-    private static boolean isJsonDirValid()
+    private static boolean isBaseDirValid()
     {
-        if(null == jsonDir || jsonDir.isEmpty())
+        if(null == baseDir || baseDir.isEmpty())
         {
-            System.err.println(Util.getDbDateTimeEst() + " json directory is required");
+            System.err.println(Util.getDbDateTimeEst() + " base directory is required");
             return false;
         }
 
-        File jsonDir = new File(Config.jsonDir);
-        if(!jsonDir.exists() || !jsonDir.isDirectory())
+        File tempDir = new File(baseDir);
+        if(!tempDir.exists() || !tempDir.isDirectory())
         {
-            System.err.println(Util.getDbDateTimeEst() + " invalid json directory " + Config.jsonDir);
+            System.err.println(Util.getDbDateTimeEst() + " invalid base directory " + baseDir);
             return false;
         }
+
+        System.out.println("base directory is " + baseDir);
 
         return true;
     }
@@ -286,10 +283,10 @@ public class Config
         // make sure access token pool pointer never goes out of bound
         if(atPoolPointer > 0)
         {
-            atPoolPointer = atPoolPointer % accessTokenPool.size();
+            atPoolPointer = atPoolPointer % accessTokens.size();
         }
-        String accessToken = accessTokenPool.get(atPoolPointer);
-        atPoolPointer = ++atPoolPointer % accessTokenPool.size();
+        String accessToken = accessTokens.get(atPoolPointer);
+        atPoolPointer = ++atPoolPointer % accessTokens.size();
         return accessToken;
     }
 }
