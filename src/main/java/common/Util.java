@@ -127,7 +127,7 @@ public class Util
     {
         JSONObject json = null;
         int retries = 0;
-        while(null == json)
+        while(null == json && retries < 5)
         {
             InputStream is = null;
             try
@@ -142,13 +142,13 @@ public class Util
                 if(retries < 5)
                 {
                     System.err.println(Util.getDbDateTimeEst() + " retrying fetch url: " + url);
-                    Util.sleep(20);
                 }
                 else
                 {
                     System.err.println(Util.getDbDateTimeEst() + " reading failed for url: " + url);
                     e.printStackTrace();
                 }
+                Util.sleep(20);
             }
             finally
             {

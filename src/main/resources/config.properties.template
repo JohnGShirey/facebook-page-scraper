@@ -62,3 +62,6 @@ statsHistory=false
 # if you are hitting rate limits and exceptions are thrown, increase the delay to a higher value (eg, 100, 500 etc.)
 # used by fb-data-collector
 delay=20
+#
+# if you do not want the program to exit when a page is broken and fetching fails set this to "false"
+# exitWhenFetchFails=true
