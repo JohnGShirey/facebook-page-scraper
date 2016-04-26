@@ -73,7 +73,7 @@ This software is maintained by
 * [Yatish Hegde] (https://github.com/yhegde)  
 
 **Cite as**  
-    <pre>fb-page-scraper (2016). Version 1.2. DOI: 10.5281/zenodo.50451</pre>
+    <pre>fb-page-scraper (2016). Version 1.2. DOI: 10.5281/zenodo.50523</pre>
 
 ## License  
 Copyright [2016] [Yatish Hegde]
