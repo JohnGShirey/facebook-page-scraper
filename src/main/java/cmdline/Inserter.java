@@ -56,9 +56,12 @@ public class Inserter
                     new LikesInserter(file).processLikes();
                 }
 
-                for(File file: getFilesEndsWith(dateDir, "comment_replies.json"))
+                if(Config.insertCommentReplies)
                 {
-                    new CommentsInserter(file).processComments();
+                    for(File file: getFilesEndsWith(dateDir, "comment_replies.json"))
+                    {
+                        new CommentsInserter(file).processComments();
+                    }
                 }
 
                 System.out.println(Util.getDbDateTimeEst() + " completed inserting json files from " + dateDir.getName());

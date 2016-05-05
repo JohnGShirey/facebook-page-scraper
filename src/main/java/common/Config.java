@@ -37,6 +37,8 @@ public class Config
     public static String dbUser;
     public static String dbPass;
 
+    public static boolean insertCommentReplies;
+
     /* only used by stats collector */
     public static int statsDepth;
     public static int statsInterval;
@@ -108,6 +110,8 @@ public class Config
             dbUrl = properties.getProperty("dbUrl");
             dbUser = properties.getProperty("dbUser");
             dbPass = properties.getProperty("dbPass");
+
+            insertCommentReplies = properties.getProperty("insertCommentReplies", "true").toLowerCase().equals("true");
 
             statsDepth =  Integer.parseInt(properties.getProperty("statsDepth", "5"));
             statsInterval =  Integer.parseInt(properties.getProperty("statsInterval", "10"));

@@ -80,22 +80,16 @@ public class Page
 
     public void updateDb()
     {
-        if(pageExists())
-        {
-            updatePageStats();
-        }
-        else
-        {
-            insertPage();
-        }
+        insertPage();
     }
 
     private void insertPage()
     {
         Connection connection = DbManager.getConnection();
-        String query = "INSERT INTO Page "
-                + "(id,username,name,likes,talking_about,checkins,website,link,category,affiliation,about) "
-                + "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+        String query = "INSERT INTO Page " +
+                "(id,username,name,likes,talking_about,checkins,website,link,category,affiliation,about) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?) " +
+                "ON DUPLICATE KEY UPDATE likes=VALUES(likes),talking_about=VALUES(talking_about)";
         PreparedStatement statement = null;
         try
         {
@@ -145,30 +139,6 @@ public class Page
             statement.setString(9, affiliation);
             statement.setString(10, about);
             statement.setString(11, id);
-            statement.executeUpdate();
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
-    }
-
-    private void updatePageStats()
-    {
-        Connection connection = DbManager.getConnection();
-        String query = "UPDATE Page SET likes=?, talking_about=? WHERE id=?";
-        PreparedStatement statement = null;
-        try
-        {
-            statement = connection.prepareStatement(query);
-            statement.setInt(1, likes);
-            statement.setInt(2, talkingAbout);
-            statement.setString(3, id);
             statement.executeUpdate();
         }
         catch (SQLException e)

@@ -65,7 +65,8 @@ public class PostInserter
 
         Util.sleepMillis(100);
 
-        boolean success = post.getLikes() == DbManager.getInt("SELECT likes FROM `Post` WHERE id='" + post.getId() + "'");
+        Integer tempLikes = DbManager.getInt("SELECT likes FROM `Post` WHERE id='" + post.getId() + "'");
+        boolean success = null != tempLikes && post.getLikes() == tempLikes;
 
         if(success)
         {

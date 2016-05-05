@@ -1,7 +1,6 @@
 package common.comment;
 
 import common.page.Page;
-import common.post.Post;
 import common.Util;
 import db.DbManager;
 import org.json.simple.JSONArray;
@@ -15,7 +14,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -124,51 +122,13 @@ public class CommentsInserter
 
     public void updateDb(List<Comment> comments)
     {
-        List<Comment> insertComments = new ArrayList<Comment>();
-        List<Comment> updateComments = new ArrayList<Comment>();
-        Connection connection = DbManager.getConnection();
-        String query = "SELECT id FROM Comment WHERE id=?";
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try
-        {
-            statement = connection.prepareStatement(query);
-            for(Comment comment: comments)
-            {
-                statement.setString(1, comment.getId());
-                resultSet = statement.executeQuery();
-                if(resultSet.next())
-                {
-                    updateComments.add(comment);
-                }
-                else
-                {
-                    insertComments.add(comment);
-                }
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            if(null != resultSet) try { resultSet.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
-        insertComments(insertComments);
-        updateComments(updateComments);
-    }
-
-    public void insertComments(List<Comment> comments)
-    {
         final int batchSize = 100;
         int count = 0;
         Connection connection = DbManager.getConnection();
-        String query = "INSERT INTO Comment "
-                + "(id, post_id, message, created_at, from_id, from_name, likes, replies, parent_id) "
-                + "VALUES (?,?,?,?,?,?,?,?,?)";
+        String query = "INSERT INTO Comment " +
+                "(id, post_id, message, created_at, from_id, from_name, likes, replies, parent_id) " +
+                "VALUES (?,?,?,?,?,?,?,?,?) " +
+                "ON DUPLICATE KEY UPDATE message=VALUES(message),likes=VALUES(likes),replies=VALUES(replies),parent_id=VALUES(parent_id)";
         PreparedStatement statement = null;
         try
         {
@@ -185,44 +145,6 @@ public class CommentsInserter
                 statement.setInt(8, comment.getReplies());
                 statement.setString(9, commentId);
                 statement.addBatch();
-
-                if(++count % batchSize == 0)
-                {
-                    statement.executeBatch();
-                }
-            }
-            statement.executeBatch();
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
-    }
-
-    public void updateComments(List<Comment> comments)
-    {
-        final int batchSize = 100;
-        int count = 0;
-        Connection connection = DbManager.getConnection();
-        String query = "UPDATE Comment SET message=?,likes=?,replies=?,parent_id=? WHERE id=?";
-        PreparedStatement statement = null;
-        try
-        {
-            statement = connection.prepareStatement(query);
-            for(Comment comment: comments)
-            {
-                statement.setString(1, comment.getMessage());
-                statement.setInt(2, comment.getLikes());
-                statement.setInt(3, comment.getReplies());
-                statement.setString(4, commentId);
-                statement.setString(5, comment.getId());
-                statement.addBatch();
-
                 if(++count % batchSize == 0)
                 {
                     statement.executeBatch();

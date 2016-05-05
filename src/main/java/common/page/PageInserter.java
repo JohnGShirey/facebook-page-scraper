@@ -62,7 +62,8 @@ public class PageInserter
 
         Util.sleepMillis(100);
 
-        boolean success = page.getLikes() == DbManager.getInt("SELECT likes FROM `Page` WHERE id='" + page.getId() + "'");
+        Integer tempLikes = DbManager.getInt("SELECT likes FROM `Page` WHERE id='" + page.getId() + "'");
+        boolean success = null != tempLikes && page.getLikes() == tempLikes;
 
         if(success)
         {

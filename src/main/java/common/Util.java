@@ -127,7 +127,7 @@ public class Util
     {
         JSONObject json = null;
         int retries = 0;
-        while(null == json && retries < 5)
+        while(null == json && retries++ < 5)
         {
             InputStream is = null;
             try
@@ -154,7 +154,6 @@ public class Util
             {
                 try { if(null != is) is.close(); } catch (Exception e) { e.printStackTrace(); }
             }
-            retries++;
         }
         return json;
     }

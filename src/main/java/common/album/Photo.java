@@ -53,7 +53,11 @@ public class Photo
                 String width = image.get("width").toString();
                 String imageUrl = image.get("source").toString();
                 String path = dir + "/" + Util.getCurDateTimeDirUtc() + "_" + height + "X" + width + "_image.jpg";
-                writeImage(imageUrl, path);
+                // do not download image if it exists
+                if(! new File(path).exists())
+                {
+                    writeImage(imageUrl, path);
+                }
             }
         }
     }

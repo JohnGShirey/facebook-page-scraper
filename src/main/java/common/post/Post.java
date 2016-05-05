@@ -134,51 +134,17 @@ public class Post
 
     public void updateDb()
     {
-        if(postExists())
-        {
-            updatePost();
-        }
-        else
-        {
-            insertPost();
-        }
-    }
-
-    private void updatePost()
-    {
-        Connection connection = DbManager.getConnection();
-        String query = "UPDATE Post "
-                + "SET message=?,updated_at=?,likes=?,comments=?,shares=? "
-                + "WHERE id=?";
-        PreparedStatement statement = null;
-        try
-        {
-            statement = connection.prepareStatement(query);
-            statement.setString(1, getMessage());
-            statement.setString(2, Util.toDbDateTime(getUpdatedAt()));
-            statement.setInt(3, getLikes());
-            statement.setInt(4, getComments());
-            statement.setInt(5, getShares());
-            statement.setString(6, getId());
-            statement.executeUpdate();
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
+        insertPost();
     }
 
     private void insertPost()
     {
         Connection connection = DbManager.getConnection();
-        String query = "INSERT INTO Post "
-                + "(id,page_id,message,created_at,updated_at,likes,comments,shares) "
-                + "VALUES (?,?,?,?,?,?,?,?)";
+        String query = "INSERT INTO Post " +
+                "(id,page_id,message,created_at,updated_at,likes,comments,shares) " +
+                "VALUES (?,?,?,?,?,?,?,?) " +
+                "ON DUPLICATE KEY UPDATE message=VALUES(message),updated_at=VALUES(updated_at)," +
+                "likes=VALUES(likes),comments=VALUES(comments),shares=VALUES(shares)";
         PreparedStatement statement = null;
         try
         {
