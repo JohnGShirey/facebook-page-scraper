@@ -33,6 +33,8 @@ public class PhotosCollector
         while (null != url)
         {
             JSONObject photosJson = Util.getJson(url);
+            String prevUrl = url;
+            url = null;
             if(null != photosJson)
             {
                 JSONArray photosData = (JSONArray) photosJson.get("data");
@@ -42,8 +44,6 @@ public class PhotosCollector
                     JSONObject photo = (JSONObject) itr.next();
                     getPhotos().add(new Photo(getUsername(), getAlbumId(), photo));
                 }
-
-                url = null;
                 JSONObject paging = (JSONObject) photosJson.get("paging");
                 if(null != paging && null != paging.get("next"))
                 {
@@ -52,7 +52,7 @@ public class PhotosCollector
             }
             else
             {
-                System.err.println(Util.getDbDateTimeEst() + " reading albums failed for url: " + url);
+                System.err.println(Util.getDbDateTimeEst() + " reading albums failed for url: " + prevUrl);
             }
         }
     }

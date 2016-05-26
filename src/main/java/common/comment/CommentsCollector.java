@@ -21,7 +21,7 @@ public class CommentsCollector
     private String commentId;
     public JSONArray comments = new JSONArray();
     public static final String fields = "id,message,created_time,from,like_count,comment_count";
-    private String accessToken;
+    //private String accessToken;
 
     public CommentsCollector(String username, String postId)
     {
@@ -38,7 +38,7 @@ public class CommentsCollector
         this.username = username;
         this.postId = postId;
         this.commentId = commentId;
-        this.accessToken = Config.getAccessToken();
+        //this.accessToken = Config.getAccessToken();
     }
 
     public void collect()
@@ -52,16 +52,18 @@ public class CommentsCollector
         {
             url = Config.baseUrl + "/" + commentId + "/comments";
         }
-        url += "?access_token=" + accessToken;
+        //url += "?access_token=" + accessToken;
+        url += "?access_token=" + Config.getAccessToken();
         url += "&fields=" + fields;
         while (url != null)
         {
             JSONObject commentsJson = Util.getJson(url);
+            String prevUrl = url;
+            url = null;
             if(null != commentsJson)
             {
                 JSONArray commentsData = (JSONArray) commentsJson.get("data");
                 comments.addAll(commentsData);
-                url = null;
                 JSONObject paging = (JSONObject) commentsJson.get("paging");
                 if(null != paging && null != paging.get("next"))
                 {
@@ -70,7 +72,7 @@ public class CommentsCollector
             }
             else
             {
-                System.err.println(Util.getDbDateTimeEst() + " reading comments failed for url: " + url);
+                System.err.println(Util.getDbDateTimeEst() + " reading comments failed for url: " + prevUrl);
             }
         }
 

@@ -36,6 +36,8 @@ public class PostsCollector
         while (null != url)
         {
             JSONObject postsJson = Util.getJson(url);
+            String prevUrl = url;
+            url = null;
             if(null != postsJson)
             {
                 JSONArray postsData = (JSONArray) postsJson.get("data");
@@ -45,8 +47,6 @@ public class PostsCollector
                     JSONObject postJson = (JSONObject) itr.next();
                     posts.add(new Post(username, postJson, Util.getDbDateTimeUtc()));
                 }
-
-                url = null;
                 JSONObject paging = (JSONObject) postsJson.get("paging");
                 if(null != paging && null != paging.get("next"))
                 {
@@ -55,7 +55,7 @@ public class PostsCollector
             }
             else
             {
-                System.err.println(Util.getDbDateTimeEst() + " reading posts failed for url: " + url);
+                System.err.println(Util.getDbDateTimeEst() + " reading posts failed for url: " + prevUrl);
             }
         }
     }

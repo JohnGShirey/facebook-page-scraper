@@ -31,6 +31,8 @@ public class AlbumsCollector
         while (null != url)
         {
             JSONObject albumsJson = Util.getJson(url);
+            String prevUrl = url;
+            url = null;
             if(null != albumsJson)
             {
                 JSONArray albumsData = (JSONArray) albumsJson.get("data");
@@ -40,8 +42,6 @@ public class AlbumsCollector
                     JSONObject album = (JSONObject) itr.next();
                     albums.add(new Album(username, album));
                 }
-
-                url = null;
                 JSONObject paging = (JSONObject) albumsJson.get("paging");
                 if(null != paging && null != paging.get("next"))
                 {
@@ -50,7 +50,7 @@ public class AlbumsCollector
             }
             else
             {
-                System.err.println(Util.getDbDateTimeEst() + " reading albums failed for url: " + url);
+                System.err.println(Util.getDbDateTimeEst() + " reading albums failed for url: " + prevUrl);
                 if(Config.exitWhenFetchFails)
                 {
                     System.exit(0);

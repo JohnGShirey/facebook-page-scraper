@@ -36,11 +36,12 @@ public class LikesCollector
         while (null != url)
         {
             JSONObject likesJson = Util.getJson(url);
+            String prevUrl = url;
+            url = null;
             if(null != likesJson)
             {
                 JSONArray likesData = (JSONArray) likesJson.get("data");
                 likes.addAll(likesData);
-                url = null;
                 JSONObject paging = (JSONObject) likesJson.get("paging");
                 if(null != paging && null != paging.get("next"))
                 {
@@ -49,7 +50,7 @@ public class LikesCollector
             }
             else
             {
-                System.err.println(Util.getDbDateTimeEst() + " reading likes data failed for url: " + url);
+                System.err.println(Util.getDbDateTimeEst() + " reading likes data failed for url: " + prevUrl);
             }
         }
 
