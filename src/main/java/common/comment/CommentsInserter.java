@@ -128,7 +128,7 @@ public class CommentsInserter
         String query = "INSERT INTO Comment " +
                 "(id, post_id, message, created_at, from_id, from_name, likes, replies, parent_id) " +
                 "VALUES (?,?,?,?,?,?,?,?,?) " +
-                "ON DUPLICATE KEY UPDATE message=VALUES(message),likes=VALUES(likes),replies=VALUES(replies),parent_id=VALUES(parent_id)";
+                "ON DUPLICATE KEY UPDATE post_id=VALUES(post_id),message=VALUES(message),likes=VALUES(likes),replies=VALUES(replies),parent_id=VALUES(parent_id)";
         PreparedStatement statement = null;
         try
         {
