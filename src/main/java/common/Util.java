@@ -148,7 +148,7 @@ public class Util
                     System.err.println(Util.getDbDateTimeEst() + " reading failed for url: " + url);
                     e.printStackTrace();
                 }
-                //Util.sleep(20);
+                Util.sleep(30);
             }
             finally
             {

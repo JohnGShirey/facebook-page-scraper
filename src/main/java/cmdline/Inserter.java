@@ -8,9 +8,13 @@ import common.post.PostInserter;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Inserter
 {
+    public static HashMap<String, String> pageIdUsername = new HashMap<String, String>();
+    public static HashMap<String, String> postIdPageId = new HashMap<String, String>();
+
     public static void main(String[] args)
     {
         Config.initInserter();
@@ -19,7 +23,6 @@ public class Inserter
         {
             File[] dateDirs = new File(Config.downloadDir).listFiles(new FileFilter()
             {
-                @Override
                 public boolean accept(File file)
                 {
                     boolean accept = file.isDirectory();
@@ -75,7 +78,6 @@ public class Inserter
     {
         File[] files = dateDir.listFiles(new FilenameFilter()
         {
-            @Override
             public boolean accept(File dir, String name)
             {
                 return name.endsWith(endsWith);

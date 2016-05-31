@@ -53,6 +53,8 @@ public class Config
 
     public static boolean exitWhenFetchFails;
 
+    public static int fetchRetries;
+
     /* used by pseudo tagger */
     public static String tagTable;
     public static List<Integer> excludeCodes = new ArrayList<Integer>();
@@ -120,6 +122,8 @@ public class Config
             delay = Integer.parseInt(properties.getProperty("delay", "1"));
 
             exitWhenFetchFails = properties.getProperty("exitWhenFetchFails", "true").toLowerCase().equals("true");
+
+            fetchRetries =  Integer.parseInt(properties.getProperty("fetchRetries", "5"));
 
             tagTable = properties.getProperty("tagTable");
             if(null != properties.getProperty("excludeCodes"))

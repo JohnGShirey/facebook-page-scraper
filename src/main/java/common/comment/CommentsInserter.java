@@ -2,6 +2,7 @@ package common.comment;
 
 import common.page.Page;
 import common.Util;
+import common.post.Post;
 import db.DbManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -52,7 +53,7 @@ public class CommentsInserter
             {
                 commentId = matcher.group(3) + "_" + matcher.group(4);
                 postId = DbManager.getFieldValue("Comment", "post_id", "id", commentId);
-                pageId = DbManager.getFieldValue("Post", "page_id", "id", postId);
+                pageId = Post.getPageId(postId);
             }
             username = Page.getUsername(pageId);
         }
@@ -136,14 +137,14 @@ public class CommentsInserter
             for(Comment comment: comments)
             {
                 statement.setString(1, comment.getId());
-                statement.setString(2, postId);
+                statement.setString(2, comment.getPostId());
                 statement.setString(3, comment.getMessage());
                 statement.setString(4, Util.toDbDateTime(comment.getCreatedAt()));
                 statement.setString(5, comment.getFromId());
                 statement.setString(6, comment.getFromName());
                 statement.setInt(7, comment.getLikes());
                 statement.setInt(8, comment.getReplies());
-                statement.setString(9, commentId);
+                statement.setString(9, comment.getCommentId());
                 statement.addBatch();
                 if(++count % batchSize == 0)
                 {

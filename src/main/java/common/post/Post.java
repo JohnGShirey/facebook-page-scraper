@@ -1,5 +1,6 @@
 package common.post;
 
+import cmdline.Inserter;
 import common.Config;
 import common.Util;
 import common.page.Page;
@@ -247,5 +248,19 @@ public class Post
     {
         String pageId = DbManager.getFieldValue("Post", "page_id", "id", postId);
         return DbManager.getFieldValue("Page", "username", "id", pageId);
+    }
+
+    public static String getPageId(String postId)
+    {
+        String pageId = Inserter.postIdPageId.get(postId);
+        if(null == pageId)
+        {
+            pageId = DbManager.getFieldValue("Post", "page_id", "id", postId);
+            if(null != pageId)
+            {
+                Inserter.postIdPageId.put(postId, pageId);
+            }
+        }
+        return pageId;
     }
 }

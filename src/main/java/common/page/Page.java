@@ -1,5 +1,6 @@
 package common.page;
 
+import cmdline.Inserter;
 import common.Config;
 import common.Util;
 import db.DbManager;
@@ -223,7 +224,16 @@ public class Page
 
     public static String getUsername(String pageId)
     {
-        return DbManager.getFieldValue("Page", "username", "id", pageId);
+        String username = Inserter.pageIdUsername.get(pageId);
+        if(null == username)
+        {
+            username = DbManager.getFieldValue("Page", "username", "id", pageId);
+            if(null != username)
+            {
+                Inserter.pageIdUsername.put(pageId, username);
+            }
+        }
+        return username;
     }
 
     public static Page getPage(String pageId)
