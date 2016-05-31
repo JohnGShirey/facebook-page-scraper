@@ -19,19 +19,20 @@ public class LikesCollector
     private String postId;
     public JSONArray likes = new JSONArray();
     public static final String fields = "id,name";
-    private String accessToken;
+    //private String accessToken;
 
     public LikesCollector(String username, String postId)
     {
         this.username = username;
         this.postId = postId;
-        this.accessToken = Config.getAccessToken();
+        //this.accessToken = Config.getAccessToken();
     }
 
     public void collect()
     {
         String url = Config.baseUrl + "/" + postId + "/likes";
-        url += "?access_token=" + accessToken;
+        //url += "?access_token=" + accessToken;
+        url += "?access_token=" + Config.getAccessToken();
         url += "&fields=" + fields;
         while (null != url)
         {

@@ -252,15 +252,6 @@ public class Post
 
     public static String getPageId(String postId)
     {
-        String pageId = Inserter.postIdPageId.get(postId);
-        if(null == pageId)
-        {
-            pageId = DbManager.getFieldValue("Post", "page_id", "id", postId);
-            if(null != pageId)
-            {
-                Inserter.postIdPageId.put(postId, pageId);
-            }
-        }
-        return pageId;
+        return DbManager.getFieldValue("Post", "page_id", "id", postId);
     }
 }

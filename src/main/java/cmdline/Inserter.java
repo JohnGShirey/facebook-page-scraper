@@ -12,9 +12,6 @@ import java.util.HashMap;
 
 public class Inserter
 {
-    public static HashMap<String, String> pageIdUsername = new HashMap<String, String>();
-    public static HashMap<String, String> postIdPageId = new HashMap<String, String>();
-
     public static void main(String[] args)
     {
         Config.initInserter();

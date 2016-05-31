@@ -93,20 +93,22 @@ public class CommentsInserter
             allComments.add(comment);
         }
 
-        updateDb(allComments);
+        int rowsUpdated = updateDb(allComments);
 
         Util.sleepMillis(100);
 
-        boolean success;
+        boolean success = rowsUpdated == allComments.size();
 
-        if(null == commentId)
+        //System.out.println("comments: " + allComments.size() + " updated: " + rowsUpdated);
+
+        /*if(null == commentId)
         {
             success = allComments.size() <= DbManager.getInt("SELECT COUNT(*) AS count FROM Comment WHERE post_id='" + postId + "'");
         }
         else
         {
             success = allComments.size() <= DbManager.getInt("SELECT COUNT(*) AS count FROM Comment WHERE parent_id='" + commentId + "'");
-        }
+        }*/
 
         if(success)
         {
@@ -121,8 +123,9 @@ public class CommentsInserter
         }
     }
 
-    public void updateDb(List<Comment> comments)
+    public int updateDb(List<Comment> comments)
     {
+        int rowsUpdated = 0;
         final int batchSize = 100;
         int count = 0;
         Connection connection = DbManager.getConnection();
@@ -148,10 +151,18 @@ public class CommentsInserter
                 statement.addBatch();
                 if(++count % batchSize == 0)
                 {
-                    statement.executeBatch();
+                    int[] tempUpdated = statement.executeBatch();
+                    for(int i: tempUpdated)
+                    {
+                        rowsUpdated += i;
+                    }
                 }
             }
-            statement.executeBatch();
+            int[] tempUpdated = statement.executeBatch();
+            for(int i: tempUpdated)
+            {
+                rowsUpdated += i;
+            }
         }
         catch (SQLException e)
         {
@@ -162,5 +173,6 @@ public class CommentsInserter
             if(null != statement) try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if(null != connection) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
+        return rowsUpdated;
     }
 }

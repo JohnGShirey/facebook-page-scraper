@@ -224,16 +224,7 @@ public class Page
 
     public static String getUsername(String pageId)
     {
-        String username = Inserter.pageIdUsername.get(pageId);
-        if(null == username)
-        {
-            username = DbManager.getFieldValue("Page", "username", "id", pageId);
-            if(null != username)
-            {
-                Inserter.pageIdUsername.put(pageId, username);
-            }
-        }
-        return username;
+        return DbManager.getFieldValue("Page", "username", "id", pageId);
     }
 
     public static Page getPage(String pageId)
