@@ -127,7 +127,7 @@ public class Util
     {
         JSONObject json = null;
         int retries = 0;
-        while(null == json && retries++ < Config.fetchRetries)
+        while(null == json && retries++ <= Config.fetchRetries)
         {
             InputStream is = null;
             try
@@ -139,16 +139,16 @@ public class Util
             catch (Exception e)
             {
                 System.err.println(e.getMessage());
-                if(retries < Config.fetchRetries)
+                if(retries <= Config.fetchRetries)
                 {
                     System.err.println(Util.getDbDateTimeEst() + " retrying fetch url: " + url);
+                    Util.sleep(30);
                 }
                 else
                 {
                     System.err.println(Util.getDbDateTimeEst() + " reading failed for url: " + url);
                     e.printStackTrace();
                 }
-                Util.sleep(30);
             }
             finally
             {

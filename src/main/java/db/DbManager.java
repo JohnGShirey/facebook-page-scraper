@@ -1,5 +1,6 @@
 package db;
 
+import cmdline.Inserter;
 import common.Config;
 
 import java.sql.*;
@@ -108,6 +109,12 @@ public class DbManager
         return values;
     }
 
+    public static String getString(String query)
+    {
+        List<String> values = getStringValues(query);
+        return values.size() > 0 ? values.get(0) : null;
+    }
+
     public static List<Integer> getIntValues(String query)
     {
         List<Integer> values = new ArrayList<Integer>();
@@ -137,6 +144,7 @@ public class DbManager
 
     public static Integer getInt(String query)
     {
-        return getIntValues(query).get(0);
+        List<Integer> values = getIntValues(query);
+        return values.size() > 0 ? values.get(0) : null;
     }
 }

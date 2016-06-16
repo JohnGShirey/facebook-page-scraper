@@ -49,7 +49,7 @@ public class Config
     public static String archiveDir;
 
     /* optional */
-    public static int delay = 1;
+    public static int delay;
 
     public static boolean exitWhenFetchFails;
 
@@ -58,6 +58,8 @@ public class Config
     /* used by pseudo tagger */
     public static String tagTable;
     public static List<Integer> excludeCodes = new ArrayList<Integer>();
+
+    public static String filterPostsSql;
 
     private static void init()
     {
@@ -136,6 +138,8 @@ public class Config
                     }
                 }
             }
+
+            filterPostsSql = properties.getProperty("filterPostsSql");
         }
         catch (IOException e)
         {

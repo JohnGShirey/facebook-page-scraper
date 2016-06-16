@@ -8,14 +8,13 @@ import common.page.Page;
 import common.page.PageCollector;
 import common.post.Post;
 import common.post.PostsCollector;
+import db.DbManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataCollector
 {
-    public static int requests = 0;
-
     public static void main(String[] args) throws Exception
     {
         Config.initDataCollector();
@@ -43,33 +42,54 @@ public class DataCollector
         }
     }
 
-    public static void collectData()
+    private static void collectData()
     {
-        List<Page> pages = new ArrayList<Page>();
-        for(String username: Config.pages)
-        {
-            PageCollector pageCollector = new PageCollector(username);
-            pageCollector.collect();
-            if(null != pageCollector.getPage())
-            {
-                pages.add(pageCollector.getPage());
-            }
-        }
-        delay(Config.pages.size());
-
         List<Post> posts = new ArrayList<Post>();
-        for(Page page: pages)
+
+        if(null == Config.filterPostsSql)
         {
-            PostsCollector postsCollector = new PostsCollector(page.getUsername(), Config.since, Config.until);
-            postsCollector.collect();
-            posts.addAll(postsCollector.getPosts());
-            System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCollector.getPosts().size() + " posts from page " + page.getUsername());
-            delay(postsCollector.getPosts().size());
+            List<Page> pages = new ArrayList<Page>();
+
+            for(String username: Config.pages)
+            {
+                PageCollector pageCollector = new PageCollector(username);
+
+                pageCollector.collect();
+
+                if(null != pageCollector.getPage())
+                {
+                    pages.add(pageCollector.getPage());
+                }
+            }
+
+            Util.sleepMillis(Config.pages.size() * Config.delay);
+
+            for(Page page: pages)
+            {
+                PostsCollector postsCollector = new PostsCollector(page.getUsername(), Config.since, Config.until);
+
+                postsCollector.collect();
+
+                posts.addAll(postsCollector.getPosts());
+
+                System.out.println(Util.getDbDateTimeEst() + " fetched " + postsCollector.getPosts().size() + " posts from page " + page.getUsername());
+
+                Util.sleepMillis(postsCollector.getPosts().size() * Config.delay);
+            }
+
+            System.out.println(Util.getDbDateTimeEst() + " fetched total " + posts.size() + " posts from " + Config.pages.size() + " pages");
         }
-        System.out.println(Util.getDbDateTimeEst() + " fetched total " + posts.size() + " posts from " + Config.pages.size() + " pages");
+        else
+        {
+            posts = getFilteredPosts();
+
+            System.out.println(Util.getDbDateTimeEst() + " total posts from sql " + posts.size());
+        }
 
         if(Config.collectComments)
         {
+            System.out.println(Util.getDbDateTimeEst() + " started fetching comments for " + posts.size() + " posts");
+
             collectComments(posts);
         }
 
@@ -86,11 +106,16 @@ public class DataCollector
             if(post.getComments() > 0)
             {
                 System.out.println(Util.getDbDateTimeEst() + " fetching comments for post " + post.getId() + " created_at " + post.getCreatedAt());
+
                 CommentsCollector commentsCollector = new CommentsCollector(post.getUsername(), post.getId());
+
                 commentsCollector.collect();
+
                 List<Comment> comments = commentsCollector.getComments();
+
                 System.out.println(Util.getDbDateTimeEst() + " fetched " + comments.size() + " comments");
-                delay(comments.size());
+
+                Util.sleepMillis(comments.size() * Config.delay);
 
                 if(Config.collectCommentReplies)
                 {
@@ -107,10 +132,14 @@ public class DataCollector
             if(comment.getReplies() > 0)
             {
                 System.out.println(Util.getDbDateTimeEst() + " fetching replies for comment " + comment.getId());
+
                 CommentsCollector repliesCollector = new CommentsCollector(post.getUsername(), post.getId(), comment.getId());
+
                 repliesCollector.collect();
+
                 System.out.println(Util.getDbDateTimeEst() + " fetched " + repliesCollector.getComments().size() + " replies");
-                delay(repliesCollector.getComments().size());
+
+                Util.sleepMillis(repliesCollector.getComments().size() * Config.delay);
             }
         }
     }
@@ -122,21 +151,29 @@ public class DataCollector
             if(post.getLikes() > 0)
             {
                 System.out.println(Util.getDbDateTimeEst() + " fetching likes for post " + post.getId() + " created_at " + post.getCreatedAt());
+
                 LikesCollector likesCollector = new LikesCollector(post.getUsername(), post.getId());
+
                 likesCollector.collect();
+
                 System.out.println(Util.getDbDateTimeEst() + " fetched " + likesCollector.likes.size() + " likes");
-                delay(likesCollector.likes.size());
+
+                Util.sleepMillis(likesCollector.likes.size() * Config.delay);
             }
         }
     }
 
-    public static void delay(int numRequests)
+    private static List<Post> getFilteredPosts()
     {
-        requests += numRequests;
-        if(requests > 100)
+        List<Post> filteredPosts = new ArrayList<Post>();
+
+        List<String> availablePosts = DbManager.getStringValues(Config.filterPostsSql);
+
+        for(String postId: DbManager.getStringValues(Config.filterPostsSql))
         {
-            Util.sleepMillis(requests * Config.delay);
-            requests = 0;
+            filteredPosts.add(new Post(postId));
         }
+
+        return filteredPosts;
     }
 }

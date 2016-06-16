@@ -43,6 +43,7 @@ public class Post
     public Post(String postId)
     {
         this.id = postId;
+        this.username = Post.getUsername(id);
         Connection connection = DbManager.getConnection();
         String query = "SELECT likes,comments,shares FROM Post WHERE id=?";
         PreparedStatement statement = null;

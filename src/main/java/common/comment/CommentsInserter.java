@@ -147,7 +147,7 @@ public class CommentsInserter
                 statement.setString(6, comment.getFromName());
                 statement.setInt(7, comment.getLikes());
                 statement.setInt(8, comment.getReplies());
-                statement.setString(9, comment.getCommentId());
+                statement.setString(9, comment.getParentCommentId());
                 statement.addBatch();
                 if(++count % batchSize == 0)
                 {

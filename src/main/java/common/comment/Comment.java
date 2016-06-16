@@ -13,9 +13,9 @@ public class Comment
     private String fromId;
     private String fromName;
     private String postId;
-    private String commentId;
+    private String parentCommentId;
 
-    public Comment(JSONObject comment, String postId, String commentId)
+    public Comment(JSONObject comment, String postId, String parentCommentId)
     {
         id = comment.get("id").toString();
         message = null != comment.get("message") ? comment.get("message").toString() : null;
@@ -29,7 +29,7 @@ public class Comment
             fromName = null != from.get("name") ? from.get("name").toString() : "";
         }
         this.postId = postId;
-        this.commentId = commentId;
+        this.parentCommentId = parentCommentId;
     }
 
     public boolean commentExists()
@@ -76,8 +76,8 @@ public class Comment
         return postId;
     }
 
-    public String getCommentId()
+    public String getParentCommentId()
     {
-        return commentId;
+        return parentCommentId;
     }
 }
