@@ -45,7 +45,7 @@ public class Post
         this.id = postId;
         this.username = Post.getUsername(id);
         Connection connection = DbManager.getConnection();
-        String query = "SELECT likes,comments,shares FROM Post WHERE id=?";
+        String query = "SELECT likes,comments,shares,created_at FROM Post WHERE id=?";
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try
@@ -58,6 +58,7 @@ public class Post
                 this.likes = resultSet.getInt(1);
                 this.comments = resultSet.getInt(2);
                 this.shares = resultSet.getInt(3);
+                this.createdAt = resultSet.getString(4);
             }
         }
         catch (SQLException e)
@@ -79,7 +80,7 @@ public class Post
         if(null != likesObject)
         {
             JSONObject likesSummaryObject = (JSONObject) likesObject.get("summary");
-            if(null != likesSummaryObject)
+            if(null != likesSummaryObject && null != likesSummaryObject.get("total_count"))
             {
                 likesCount = Integer.parseInt(likesSummaryObject.get("total_count").toString());
             }
@@ -94,7 +95,7 @@ public class Post
         if(null != commentsObject)
         {
             JSONObject commentsSummaryObject = (JSONObject) commentsObject.get("summary");
-            if(null != commentsSummaryObject)
+            if(null != commentsSummaryObject && null != commentsSummaryObject.get("total_count"))
             {
                 commentsCount = Integer.parseInt(commentsSummaryObject.get("total_count").toString());
             }

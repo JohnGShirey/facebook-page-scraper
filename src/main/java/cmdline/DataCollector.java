@@ -167,8 +167,6 @@ public class DataCollector
     {
         List<Post> filteredPosts = new ArrayList<Post>();
 
-        List<String> availablePosts = DbManager.getStringValues(Config.filterPostsSql);
-
         for(String postId: DbManager.getStringValues(Config.filterPostsSql))
         {
             filteredPosts.add(new Post(postId));

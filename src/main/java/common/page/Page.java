@@ -90,7 +90,7 @@ public class Page
         String query = "INSERT INTO Page " +
                 "(id,username,name,likes,talking_about,checkins,website,link,category,affiliation,about) " +
                 "VALUES (?,?,?,?,?,?,?,?,?,?,?) " +
-                "ON DUPLICATE KEY UPDATE likes=VALUES(likes),talking_about=VALUES(talking_about)";
+                "ON DUPLICATE KEY UPDATE username=VALUES(username),likes=VALUES(likes),talking_about=VALUES(talking_about)";
         PreparedStatement statement = null;
         try
         {

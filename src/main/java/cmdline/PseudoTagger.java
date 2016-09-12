@@ -7,9 +7,7 @@ import db.DbManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class PseudoTagger
 {
@@ -28,35 +26,49 @@ public class PseudoTagger
                 }
             }
 
-            String q = "SELECT id FROM Post WHERE `code` IS NULL LIMIT 1000";
+            String q = "SELECT id FROM " + Config.tagTable + " WHERE `code` IS NULL LIMIT 10000";
 
-            List<String> postIds = DbManager.getStringValues(q);
+            List<String> ids = DbManager.getStringValues(q);
 
             Random random = new Random();
 
-            for(String postId: postIds)
+            HashMap<String, Integer> idCode = new HashMap<String, Integer>();
+
+            for(String id: ids)
             {
                 int rand = random.nextInt(codes.size());
-                updateTag(postId, codes.get(rand));
+                idCode.put(id, codes.get(rand));
             }
 
-            System.out.println(Util.getDbDateTimeEst() + " applied pseudo tagging to " + postIds.size() + " posts");
+            updateTag(idCode);
 
-            Util.sleep(300);
+            System.out.println(Util.getDbDateTimeEst() + " applied pseudo tagging to " + ids.size() + " entries");
+
+            Util.sleepMillis(Config.delay);
         }
     }
 
-    public static void updateTag(String postId, int code)
+    private static void updateTag(HashMap<String, Integer> idCode)
     {
+        final int batchSize = 100;
+        int count = 0;
         Connection connection = DbManager.getConnection();
-        String query = "UPDATE Post SET `code`=? WHERE id=?";
+        String query = "UPDATE " + Config.tagTable + " SET `code`=? WHERE id=?";
         PreparedStatement statement = null;
         try
         {
             statement = connection.prepareStatement(query);
-            statement.setInt(1, code);
-            statement.setString(2, postId);
-            statement.executeUpdate();
+            for(Map.Entry<String, Integer> entry: idCode.entrySet())
+            {
+                statement.setInt(1, entry.getValue());
+                statement.setString(2, entry.getKey());
+                statement.executeUpdate();
+                if (++count % batchSize == 0)
+                {
+                    statement.executeBatch();
+                }
+            }
+            statement.executeBatch();
         }
         catch (SQLException e)
         {
