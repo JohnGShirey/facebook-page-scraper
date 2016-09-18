@@ -32,6 +32,12 @@ public class Util
         return dbDateFormatter.format(date);
     }
 
+    public static String getDbDateTimeUtc(Date date)
+    {
+        dbDateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return dbDateFormatter.format(date);
+    }
+
     public static String getCurDateTimeUtc()
     {
         DateFormat dbDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -112,6 +118,20 @@ public class Util
     public static String buildPath(String... directories)
     {
         String dir = Config.baseDir;
+        for(String temp: directories)
+        {
+            dir = dir + "/" + temp;
+            if(!(new File(dir).exists()))
+            {
+                new File(dir).mkdir();
+            }
+        }
+        return dir;
+    }
+
+    public static String buildPathTwitter(String... directories)
+    {
+        String dir = TwitterConfig.baseDir;
         for(String temp: directories)
         {
             dir = dir + "/" + temp;

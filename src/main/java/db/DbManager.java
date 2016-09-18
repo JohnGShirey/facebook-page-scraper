@@ -28,6 +28,25 @@ public class DbManager
         return connection;
     }
 
+    public static Connection getConnection(String url, String user, String pass)
+    {
+        Connection connection = null;
+        try
+        {
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection(url, user, pass);
+        }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return connection;
+    }
+
     public static boolean entryExists(String table, String key, String value)
     {
         return null != getFieldValue(table, key, key, value);
@@ -145,6 +164,33 @@ public class DbManager
     public static Integer getInt(String query)
     {
         List<Integer> values = getIntValues(query);
+        return values.size() > 0 ? values.get(0) : null;
+    }
+
+    public static List<Integer> getIntValues(Connection connection, String query)
+    {
+        List<Integer> values = new ArrayList<Integer>();
+        try
+        {
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next())
+            {
+                values.add(resultSet.getInt(1));
+            }
+            resultSet.close();
+            statement.close();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return values;
+    }
+
+    public static Integer getInt(Connection connection, String query)
+    {
+        List<Integer> values = getIntValues(connection, query);
         return values.size() > 0 ? values.get(0) : null;
     }
 }

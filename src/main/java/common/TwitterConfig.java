@@ -8,10 +8,22 @@ import java.util.Properties;
 
 public class TwitterConfig
 {
-    private static void init()
+    public static String baseDir;
+    public static String[] hashtags;
+    public static String dbUrl;
+    public static String dbUser;
+    public static String dbPass;
+    public static boolean shutdown = false;
+
+    public static String downloadDir;
+    public static String archiveDir;
+
+    public static void init()
     {
         Properties properties = new Properties();
+
         InputStream inputStream = null;
+
         try
         {
             if (new File("twitter_config.properties").exists())
@@ -24,7 +36,7 @@ public class TwitterConfig
             }
             if (null == inputStream)
             {
-                System.err.println("Could not find config.properties. Searched in base directory and " + System.getProperty("user.home") + "/fb-page-scraper");
+                System.err.println("Could not find twitter_config.properties. Searched in base directory and " + System.getProperty("user.home") + "/twitter");
                 System.exit(0);
             }
 
@@ -48,5 +60,29 @@ public class TwitterConfig
                 }
             }
         }
+
+        if(null != properties.getProperty("hashtags") && !properties.getProperty("hashtags").isEmpty())
+        {
+            hashtags = properties.getProperty("hashtags").split("\\s*,\\s*");
+        }
+
+        System.out.println("hashtags=" + properties.getProperty("hashtags"));
+
+        dbUrl = properties.getProperty("dbUrl");
+        dbUser = properties.getProperty("dbUser");
+        dbPass = properties.getProperty("dbPass");
+
+        shutdown = properties.getProperty("shutdown", "false").toLowerCase().equals("true");
+
+        baseDir = properties.getProperty("baseDir", System.getProperty("user.home") + "/twitter");
+        if(!(new File(baseDir).exists() && new File(baseDir).isDirectory()))
+        {
+            System.err.println("baseDir does not exist");
+        }
+
+        System.out.println("baseDir=" + baseDir);
+
+        downloadDir = baseDir + "/download";
+        archiveDir = baseDir + "/archive";
     }
 }
