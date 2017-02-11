@@ -9,11 +9,12 @@ Facebook Page Scraper is a suite of tools for collecting data from public Facebo
 
 Facebook Page Scraper is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tools.
 
-You can cite this repository as:
+**Cite as**  
 
 Hegde, Y. (2016). facebob-page-scraper (Version 1.33). Syracuse University, School of Information Studies. Retrieved from https://github.com/yhegde/facebook-page-scraper DOI: 10.5281/zenodo.55940
 
-<pre>Warning: If required by law, you should obtain necessary permissions for downloading data as given in Facebook's terms and conditions, or from concerned authority who manages the Facebook pages, or as per any other applicable law and regulations. This tool does NOT grant you permissions to dowload data from Facebook. You should obtain the permissions yourself.</pre>
+    
+Warning: If required by law, you should obtain necessary permissions for downloading data as given in Facebook's terms and conditions, or from concerned authority who manages the Facebook pages, or as per any other applicable law and regulations. This tool does NOT grant you permissions to dowload data from Facebook. You should obtain the permissions yourself.
 
 ## Quick start guide
  
@@ -75,9 +76,6 @@ If you have a requirement to keep collecting stats data (eg. likes count, commen
 
 This software is maintained by
 * [Yatish Hegde] (https://github.com/yhegde)  
-
-**Cite as**  
-    <pre>Hegde, Y. (2016). facebob-page-scraper (Version 1.33). Syracuse University, School of Information Studies. Retrieved from https://github.com/yhegde/facebook-page-scraper DOI: 10.5281/zenodo.55940</pre>
 
 ## License  
 Copyright [2016] [Yatish Hegde]
