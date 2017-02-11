@@ -1,13 +1,17 @@
 # Facebook Page Scraper
 
-[![DOI](https://zenodo.org/badge/19221/yhegde/fb-page-scraper.svg)](https://zenodo.org/badge/latestdoi/19221/yhegde/fb-page-scraper)
+<!---[![DOI](https://zenodo.org/badge/19221/yhegde/fb-page-scraper.svg)](https://zenodo.org/badge/latestdoi/19221/yhegde/fb-page-scraper)--->
 
 Facebook Page Scraper is a suite of tools for collecting data from public Facebook Pages using Facebook's Graph API. Using this tool you can 
 * download data (posts, comments, etc.) in json format
 * process json files and insert data into MySQL database
 * download images from the public pages
 
-Facebook Page Scraper is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tools. 
+Facebook Page Scraper is especially built for keeping it running and collecting large amount of historical, current and future data (posts, comments etc.) from multiple public facebook pages. Check config.properties.template file for various configuration options for running the tools.
+
+You can cite this repository as:
+
+Hegde, Y. (2016). facebob-page-scraper (Version 1.31). Syracuse University, School of Information Studies. Retrieved from https://github.com/yhegde/facebook-page-scraper DOI: 10.5281/zenodo.55940
 
 <pre>Warning: If required by law, you should obtain necessary permissions for downloading data as given in Facebook's terms and conditions, or from concerned authority who manages the Facebook pages, or as per any other applicable law and regulations. This tool does NOT grant you permissions to dowload data from Facebook. You should obtain the permissions yourself.</pre>
 
@@ -73,7 +77,7 @@ This software is maintained by
 * [Yatish Hegde] (https://github.com/yhegde)  
 
 **Cite as**  
-    <pre>fb-page-scraper (2016). Version 1.2. DOI: 10.5281/zenodo.50523</pre>
+    <pre>Hegde, Y. (2016). facebob-page-scraper (Version 1.31). Syracuse University, School of Information Studies. Retrieved from https://github.com/yhegde/facebook-page-scraper DOI: 10.5281/zenodo.55940</pre>
 
 ## License  
 Copyright [2016] [Yatish Hegde]
