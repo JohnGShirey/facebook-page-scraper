@@ -1,6 +1,7 @@
 # Facebook Page Scraper
 
 <!---[![DOI](https://zenodo.org/badge/19221/yhegde/fb-page-scraper.svg)](https://zenodo.org/badge/latestdoi/19221/yhegde/fb-page-scraper)--->
+[![DOI](https://zenodo.org/badge/45282738.svg)](https://zenodo.org/badge/latestdoi/45282738)
 
 Facebook Page Scraper is a suite of tools for collecting data from public Facebook Pages using Facebook's Graph API. Using this tool you can 
 * download data (posts, comments, etc.) in json format
