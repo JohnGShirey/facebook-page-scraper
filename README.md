@@ -11,7 +11,7 @@ Facebook Page Scraper is especially built for keeping it running and collecting 
 
 You can cite this repository as:
 
-Hegde, Y. (2016). facebob-page-scraper (Version 1.31). Syracuse University, School of Information Studies. Retrieved from https://github.com/yhegde/facebook-page-scraper DOI: 10.5281/zenodo.55940
+Hegde, Y. (2016). facebob-page-scraper (Version 1.33). Syracuse University, School of Information Studies. Retrieved from https://github.com/yhegde/facebook-page-scraper DOI: 10.5281/zenodo.55940
 
 <pre>Warning: If required by law, you should obtain necessary permissions for downloading data as given in Facebook's terms and conditions, or from concerned authority who manages the Facebook pages, or as per any other applicable law and regulations. This tool does NOT grant you permissions to dowload data from Facebook. You should obtain the permissions yourself.</pre>
 
@@ -77,7 +77,7 @@ This software is maintained by
 * [Yatish Hegde] (https://github.com/yhegde)  
 
 **Cite as**  
-    <pre>Hegde, Y. (2016). facebob-page-scraper (Version 1.31). Syracuse University, School of Information Studies. Retrieved from https://github.com/yhegde/facebook-page-scraper DOI: 10.5281/zenodo.55940</pre>
+    <pre>Hegde, Y. (2016). facebob-page-scraper (Version 1.33). Syracuse University, School of Information Studies. Retrieved from https://github.com/yhegde/facebook-page-scraper DOI: 10.5281/zenodo.55940</pre>
 
 ## License  
 Copyright [2016] [Yatish Hegde]
