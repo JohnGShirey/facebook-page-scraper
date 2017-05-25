@@ -53,7 +53,16 @@ public class CommentsInserter
             {
                 commentId = matcher.group(3) + "_" + matcher.group(4);
                 postId = DbManager.getFieldValue("Comment", "post_id", "id", commentId);
-                pageId = Post.getPageId(postId);
+                if(null != postId)
+                {
+                    pageId = Post.getPageId(postId);
+                }
+                else
+                {
+                    System.err.println(Util.getDbDateTimeEst() + " failed to insert " + commentsJsonFile.getAbsolutePath());
+                    System.err.println(Util.getDbDateTimeEst() + " failed to retrieve post_id for comment " + commentId);
+                    System.exit(0);
+                }
             }
             username = Page.getUsername(pageId);
         }

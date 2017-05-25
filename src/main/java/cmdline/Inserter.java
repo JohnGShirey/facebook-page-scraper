@@ -60,7 +60,8 @@ public class Inserter
                 {
                     for(File file: getFilesEndsWith(dateDir, "comment_replies.json"))
                     {
-                        new CommentsInserter(file).processComments();
+                        CommentsInserter commentsInserter = new CommentsInserter(file);
+                        commentsInserter.processComments();
                     }
                 }
 
